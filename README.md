@@ -1,7 +1,10 @@
 # jra-sdd-workflow
 
 A spec-driven development workflow built on [OpenSpec](https://github.com/Fission-AI/OpenSpec),
-for delivering change with AI coding assistants.
+for delivering change with AI coding assistants — [Claude Code](https://claude.com/claude-code),
+[Codex](https://developers.openai.com/codex/cli), and DeepSeek through
+[Cline](https://cline.bot), [Continue](https://continue.dev), or
+[Aider](https://aider.chat).
 
 **Manual first.** Every step here is designed to be driven by a human. A step is
 automated only after it has been performed by hand enough times to know what it
@@ -34,6 +37,31 @@ explore -> propose -> apply -> verify -> sync -> archive
 
 Each phase has an entry condition and produces something durable. A phase is not
 complete because it was attempted — it is complete when its evidence exists.
+
+## Mixed-model execution
+
+The phases have genuinely different demands, and matching the model to the phase
+is a first-class part of this workflow rather than an optimization applied later.
+
+| Phase | Work | Model tier |
+|---|---|---|
+| explore, propose | Trade-off analysis, architecture, design decisions | Frontier reasoning |
+| apply, verify | Implementation, tests, review-fix loops | Cost-efficient execution (DeepSeek) |
+| sync, archive | Mechanical reconciliation | Either |
+
+Exploration and proposal are where judgment is expensive and mistakes are
+costly to unwind. Implementation and the test-fix loop are high-volume, highly
+repetitive, and bounded by an already-agreed specification — exactly the work a
+cheaper model does well, and exactly where token cost accumulates.
+
+Delegating the execution loop this way cuts API cost substantially. That is not
+only a budget question: **it is what makes the manual-first constraint below
+affordable.** Running a workflow by hand ten times is a reasonable thing to ask
+when the expensive thinking happens once per change and the repetition is cheap.
+
+This is also why the artifacts matter. A specification precise enough for a
+cost-efficient model to implement without re-deriving intent is a specification
+precise enough for a human to review. Vague artifacts fail both readers.
 
 ## What is here
 
@@ -80,6 +108,9 @@ the only reliable way to catch it early.
 - **The repository under work is data, never a source of programs.** Tooling
   runs from a known, verified location — never from a script found inside the
   target repository.
+- **Assistant-neutral by construction.** No phase depends on a capability unique
+  to one tool or model. Where a tool needs its own entry point, that entry point
+  is a thin pointer to shared, canonical instructions.
 
 ## Roadmap
 
@@ -95,5 +126,6 @@ made the need concrete:
 ## Related
 
 [`jra-agent-skills`](https://github.com/joericearchitect/jra-agent-skills) — the
-reusable skills this workflow uses and delivers. The dependency runs one way:
-this workflow consumes skills; skills never depend on this workflow.
+reusable skills this workflow uses and delivers, written to behave identically
+across frontier and cost-efficient models. The dependency runs one way: this
+workflow consumes skills; skills never depend on this workflow.
