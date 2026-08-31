@@ -1,0 +1,18 @@
+{
+  "roots": [
+    "docs",
+    "quality",
+    "schemas",
+    "scripts",
+    ".github"
+  ],
+  "portableRoots": [],
+  "identities": [
+    "jizzoe",
+    "joericearchitect-ai-skills",
+    "joerice"
+  ],
+  "allow": [
+    ".github/ISSUE_TEMPLATE/config.yml"
+  ]
+}

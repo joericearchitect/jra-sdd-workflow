@@ -1,0 +1,44 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validator unit tests
+        run: node --test "scripts/validation/test/*.test.mjs"
+
+      - name: No hardcoded environment values
+        run: node scripts/validation/validate-no-hardcoded-environment.mjs
+
+      - name: OpenSpec artifact quality
+        run: |
+          shopt -s nullglob
+          changes=(openspec/changes/*/)
+          if [ ${#changes[@]} -eq 0 ]; then
+            echo "no active changes to validate"
+            exit 0
+          fi
+          for change in "${changes[@]}"; do
+            [ "$(basename "$change")" = "archive" ] && continue
+            echo "validating $change"
+            node scripts/validation/validate-openspec-artifacts.mjs "$change"
+          done
+        shell: bash
+
+      - name: OpenSpec strict validation
+        run: |
+          npm install -g @fission-ai/openspec@1.8.0
+          openspec validate --all --strict
