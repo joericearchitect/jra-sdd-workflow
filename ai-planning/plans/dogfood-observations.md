@@ -63,6 +63,26 @@ assessed only after the manual campaign completes.
   lifecycle-record PR, both linked to the same issue and OpenSpec change.
 - Automation conclusion: none; validate the two-PR flow manually ten times.
 
+### OBS-004 — independent review exposed pre-campaign contract mismatches
+
+- Phase: campaign preflight review.
+- Expected: temporary reviewer feedback is assessed against repository evidence,
+  and only the resulting dispositions become durable.
+- Observed: independent reproduction confirmed drift between the tracking
+  schema and validator, incompatible no-spec gates, missing literal artifact
+  instructions, a PR-template mismatch, and untested validator behavior. The
+  raw Claude CLI review remains intentionally ignored.
+- Evidence:
+  [`DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
+- Blocker or impact: candidate 1 cannot safely document tracking while its
+  schema and validator disagree; later documentation-only candidates cannot
+  satisfy both current artifact gates.
+- Exit/recovery: complete PF1–PF3 from the disposition through the normal SDD
+  lifecycle, rerun the campaign entry gate, and keep candidate 1 `Blocked`
+  until the evidence is durable.
+- Automation conclusion: none; these are manual preflight repairs and do not
+  justify a controller or campaign automation.
+
 ## Per-change observation template
 
 Copy this section for each material event. Use `None observed` when a phase ran

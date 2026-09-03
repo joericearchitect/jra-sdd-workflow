@@ -42,6 +42,10 @@ does not qualify.
 - GitHub issue [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1)
   exists for candidate 1 and is on the configured Project in its initial state.
 - No OpenSpec change has been created yet.
+- Candidate 1 is blocked by the preflight repairs in
+  [review disposition `DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
+  Raw model review output remains temporary scratch; this disposition is the
+  durable source for the accepted findings and repair scope.
 - The baseline has 9 passing Node tests; the hardcoded-environment validator
   passes; `openspec validate --all --strict` reports no items to validate.
 - These planning files are included in the planning-only preflight commit before
@@ -57,7 +61,7 @@ exist.
 
 | # | Proposed OpenSpec change | Issue | Outcome | Hard dependencies | Status |
 |---|---|---|---|---|---|
-| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | Campaign preflight | In progress |
+| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Blocked |
 | 2 | `docs-definition-of-done` | TBD | Contributors can identify entry, exit, evidence, and recovery expectations for every lifecycle phase | None | Not started |
 | 3 | `docs-pr-linkage-contract` | TBD | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | Not started |
 | 4 | `align-issue-template-labels` | TBD | Issue-form labels and live repository labels agree, with a documented recovery path | None | Not started |
@@ -204,16 +208,25 @@ not receive an invented delta requirement merely to satisfy artifact validation.
 
 Complete once before candidate 1:
 
-1. Make this roadmap, both runbooks, and the observation log durable in a
-   planning-only commit. Preserve unrelated worktree changes.
-2. Record tool versions, workflow selection, active changes, current tests,
+1. Make this roadmap, both runbooks, the observation log, and review
+   disposition `DRR-2026-09-03-01` durable in planning-only commits. Preserve
+   unrelated worktree changes.
+2. Run the disposition's PF1 `align-tracking-contract`, PF2
+   `align-artifact-quality-gates`, and PF3 `make-dogfood-entry-coherent` as
+   serial, independently reviewed changes. Record their final issue, OpenSpec,
+   PR, archive, and observation evidence here; the proposed names are not
+   records until intake creates them.
+3. Confirm every item in the disposition's campaign entry gate. Only then
+   change candidate 1 from `Blocked` to `Not started`; mark it `In progress`
+   when its Explore actually begins.
+4. Record tool versions, workflow selection, active changes, current tests,
    validators, and strict OpenSpec output in the observation log.
-3. Verify GitHub authentication and discover the current repository, default
+5. Verify GitHub authentication and discover the current repository, default
    branch, Project, fields, labels, and protection/review expectations. Do not
    mutate them during discovery.
-4. Confirm issue #1 is the intake record for candidate 1 and do not create a
+6. Confirm issue #1 is the intake record for candidate 1 and do not create a
    duplicate.
-5. Record the current product/support proportions. For this campaign, workflow
+7. Record the current product/support proportions. For this campaign, workflow
    docs/config, validators, schemas/rules, templates/workflows, living specs,
    and generated assistant entry points are product surfaces. New helpers,
    harnesses, fixtures, or orchestration used only to support those surfaces
