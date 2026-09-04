@@ -7,6 +7,10 @@ constraints, but the focused parser and validator enforce only types and a few
 presence checks. The result is contract drift: an object can pass the command
 without satisfying the schema.
 
+The delivery workflow runs Node 20. Its quoted validator-test glob is passed to
+that runtime as a literal path, so CI fails before executing the test suite;
+the same command guidance must use shell expansion.
+
 The parser is intentionally a small, constrained YAML reader used only for
 tracking metadata. `tracking.yaml` is repository-specific linkage data; the
 schema, validator, tests, and change artifacts are repository-owned. The issue
@@ -92,6 +96,17 @@ Add `scripts/validation/test/tracking.test.mjs`. Use small in-test fixtures and
 The alternative of relying only on OpenSpec linkage tests would miss direct
 parser behavior and make a future drift difficult to localize.
 
+### Expand validator test files in the shell before Node 20 starts
+
+Use the existing unquoted glob in the Validate workflow and required local
+command guidance so the shell passes concrete test paths to Node 20. This keeps
+the selected test set unchanged and avoids a runtime-version upgrade or a test
+runner wrapper.
+
+The alternative—relying on Node's quoted-glob behavior—does not work on the
+repository's supported CI runtime and leaves every PR blocked before validation
+begins.
+
 ## Risks / Trade-offs
 
 - [Focused checks can drift after a future schema edit] → keep the schema
@@ -122,7 +137,7 @@ parser behavior and make a future drift difficult to localize.
 
 ## Verification Strategy
 
-- `node --test "scripts/validation/test/*.test.mjs"` passes, including the new
+- `node --test scripts/validation/test/*.test.mjs` passes, including the new
   direct tracking suite.
 - `node scripts/validation/validate-no-hardcoded-environment.mjs` passes.
 - `node scripts/validation/validate-openspec-artifacts.mjs

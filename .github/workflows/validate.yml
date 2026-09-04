@@ -18,7 +18,7 @@ jobs:
           node-version: "20"
 
       - name: Validator unit tests
-        run: node --test "scripts/validation/test/*.test.mjs"
+        run: node --test scripts/validation/test/*.test.mjs
 
       - name: No hardcoded environment values
         run: node scripts/validation/validate-no-hardcoded-environment.mjs

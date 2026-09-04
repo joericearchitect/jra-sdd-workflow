@@ -13,6 +13,8 @@ delivery linkage unreliable.
   policy layered on top of the schema.
 - Add direct parser and validator tests for valid, invalid, malformed, and
   round-trip tracking documents.
+- Make the required Node 20 validation workflow expand the existing validator
+  test-file glob rather than pass it to Node as a literal path.
 - Document the contract boundary and recovery path for the focused validator.
 
 ## Scope
@@ -43,7 +45,7 @@ validation command, source-level contract documentation, and direct tests.
 - Primary issue: https://github.com/joericearchitect/jra-sdd-workflow/issues/2
 - Affected code: `schemas/openspec-tracking-v1.schema.json`,
   `scripts/validation/lib/tracking.mjs`, `scripts/validation/validate-tracking.mjs`,
-  and direct validator tests.
+  direct validator tests, `.github/workflows/validate.yml`, and `AGENTS.md`.
 - Affected users: contributors creating `tracking.yaml` and reviewers relying
   on linkage validation.
 - Compatibility: malformed or schema-invalid documents previously accepted by
