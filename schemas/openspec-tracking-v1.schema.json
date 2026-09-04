@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.jra-sdd-workflow.invalid/openspec-tracking-v1.schema.json",
+  "$comment": "This schema is the authority for portable tracking shape and value constraints. The focused validator additionally rejects unsafe fields as a repository security policy.",
   "title": "OpenSpec Change Tracking v1",
   "type": "object",
   "required": ["schema_version", "openspec", "github", "implementation_repositories"],

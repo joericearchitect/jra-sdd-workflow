@@ -1,0 +1,17 @@
+schema_version: 1
+openspec:
+  change: align-tracking-contract
+github:
+  repository: joericearchitect/jra-sdd-workflow
+  issue: 2
+  issue_url: https://github.com/joericearchitect/jra-sdd-workflow/issues/2
+  project_owner: joericearchitect
+  project_number: 1
+implementation_repositories:
+  - repository: joericearchitect/jra-sdd-workflow
+    default_branch: main
+    paths:
+      - schemas/openspec-tracking-v1.schema.json
+      - scripts/validation/lib/tracking.mjs
+      - scripts/validation/validate-tracking.mjs
+      - scripts/validation/test/tracking.test.mjs
