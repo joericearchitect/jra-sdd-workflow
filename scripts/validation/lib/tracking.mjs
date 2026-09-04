@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const REQUIRED_ROOT = ["schema_version", "openspec", "github", "implementation_repositories"];
-const REQUIRED_GITHUB = ["repository", "issue", "issue_url", "project_owner", "project_number"];
-const REQUIRED_REPO = ["repository", "default_branch", "paths"];
+const REPOSITORY_IDENTIFIER = /^[^/]+\/[^/]+$/;
+// The schema defines the portable contract. This policy is an additional
+// repository security boundary for sensitive and mutable delivery metadata.
 const UNSAFE_FIELD = /(token|secret|password|credential|project_item|field_id|option_id|pr_state|pull_request_state|last_sync|timestamp|closed_at|merged_at)$/i;
 
 function scalar(value) {
@@ -116,7 +116,12 @@ function isListAt(lines, start, indent) {
 }
 
 export function parseTrackingYaml(text) {
-  return parseBlock(text.split(/\r?\n/), 0, 0).value;
+  try {
+    return parseBlock(text.split(/\r?\n/), 0, 0).value;
+  } catch (error) {
+    const detail = String(error?.message ?? "invalid YAML").replace(/\s+/g, " ").slice(0, 160);
+    throw new Error(`invalid tracking YAML: ${detail}`);
+  }
 }
 
 function addIssue(issues, pathValue, message, expected) {
@@ -136,11 +141,46 @@ function expectType(value, pathValue, type, issues) {
     if (!Array.isArray(value)) addIssue(issues, pathValue, "invalid field type", "array");
     return Array.isArray(value);
   }
+  if (type === "object") {
+    const valid = value !== null && typeof value === "object" && !Array.isArray(value);
+    if (!valid) addIssue(issues, pathValue, "invalid field type", "object");
+    return valid;
+  }
   if (typeof value !== type || Array.isArray(value)) {
     addIssue(issues, pathValue, "invalid field type", type);
     return false;
   }
   return true;
+}
+
+function readRequiredField(value, key, pathValue, type, issues) {
+  if (!requireField(value, key, pathValue, issues)) return undefined;
+  const field = value[key];
+  return expectType(field, `${pathValue}.${key}`, type, issues) ? field : undefined;
+}
+
+function expectNonEmptyString(value, pathValue, issues) {
+  if (value.length === 0) addIssue(issues, pathValue, "must not be empty", "non-empty string");
+}
+
+function expectRepositoryIdentifier(value, pathValue, issues) {
+  if (!REPOSITORY_IDENTIFIER.test(value)) {
+    addIssue(issues, pathValue, "invalid repository identifier", "owner/repository");
+  }
+}
+
+function expectPositiveInteger(value, pathValue, issues) {
+  if (!Number.isInteger(value) || value < 1) {
+    addIssue(issues, pathValue, "must be a positive integer", "integer >= 1");
+  }
+}
+
+function expectUri(value, pathValue, issues) {
+  try {
+    new URL(value);
+  } catch {
+    addIssue(issues, pathValue, "invalid URI", "URI");
+  }
 }
 
 function scanUnsafeFields(value, pathValue, issues) {
@@ -154,43 +194,59 @@ function scanUnsafeFields(value, pathValue, issues) {
 
 export function validateTrackingObject(value, { expectedChange } = {}) {
   const issues = [];
-  scanUnsafeFields(value, "", issues);
+  scanUnsafeFields(value, "$", issues);
 
-  for (const key of REQUIRED_ROOT) requireField(value, key, "$", issues);
-  if (!expectType(value.schema_version, "$.schema_version", "number", issues) || value.schema_version !== 1) {
+  if (!expectType(value, "$", "object", issues)) return { valid: false, issues };
+
+  const schemaVersion = readRequiredField(value, "schema_version", "$", "number", issues);
+  if (schemaVersion !== undefined && (!Number.isInteger(schemaVersion) || schemaVersion !== 1)) {
     addIssue(issues, "$.schema_version", "unsupported schema version", "1");
   }
 
-  if (requireField(value, "openspec", "$", issues) && expectType(value.openspec, "$.openspec", "object", issues)) {
-    if (requireField(value.openspec, "change", "$.openspec", issues)) {
-      expectType(value.openspec.change, "$.openspec.change", "string", issues);
-      if (expectedChange && value.openspec.change !== expectedChange) {
+  const openspec = readRequiredField(value, "openspec", "$", "object", issues);
+  if (openspec) {
+    const change = readRequiredField(openspec, "change", "$.openspec", "string", issues);
+    if (change !== undefined) {
+      expectNonEmptyString(change, "$.openspec.change", issues);
+      if (expectedChange && change !== expectedChange) {
         addIssue(issues, "$.openspec.change", `change name does not match expected ${expectedChange}`);
       }
     }
   }
 
-  if (requireField(value, "github", "$", issues) && expectType(value.github, "$.github", "object", issues)) {
-    for (const key of REQUIRED_GITHUB) requireField(value.github, key, "$.github", issues);
-    expectType(value.github.repository, "$.github.repository", "string", issues);
-    expectType(value.github.issue, "$.github.issue", "number", issues);
-    expectType(value.github.issue_url, "$.github.issue_url", "string", issues);
-    expectType(value.github.project_owner, "$.github.project_owner", "string", issues);
-    expectType(value.github.project_number, "$.github.project_number", "number", issues);
+  const github = readRequiredField(value, "github", "$", "object", issues);
+  if (github) {
+    const repository = readRequiredField(github, "repository", "$.github", "string", issues);
+    if (repository !== undefined) expectRepositoryIdentifier(repository, "$.github.repository", issues);
+    const issue = readRequiredField(github, "issue", "$.github", "number", issues);
+    if (issue !== undefined) expectPositiveInteger(issue, "$.github.issue", issues);
+    const issueUrl = readRequiredField(github, "issue_url", "$.github", "string", issues);
+    if (issueUrl !== undefined) expectUri(issueUrl, "$.github.issue_url", issues);
+    const projectOwner = readRequiredField(github, "project_owner", "$.github", "string", issues);
+    if (projectOwner !== undefined) expectNonEmptyString(projectOwner, "$.github.project_owner", issues);
+    const projectNumber = readRequiredField(github, "project_number", "$.github", "number", issues);
+    if (projectNumber !== undefined) expectPositiveInteger(projectNumber, "$.github.project_number", issues);
   }
 
-  if (expectType(value.implementation_repositories, "$.implementation_repositories", "array", issues)) {
-    if (value.implementation_repositories.length === 0) {
+  const repositories = readRequiredField(value, "implementation_repositories", "$", "array", issues);
+  if (repositories !== undefined) {
+    if (repositories.length === 0) {
       addIssue(issues, "$.implementation_repositories", "must contain at least one repository");
     }
-    value.implementation_repositories.forEach((repo, index) => {
+    repositories.forEach((repo, index) => {
       const repoPath = `$.implementation_repositories[${index}]`;
       if (!expectType(repo, repoPath, "object", issues)) return;
-      for (const key of REQUIRED_REPO) requireField(repo, key, repoPath, issues);
-      expectType(repo.repository, `${repoPath}.repository`, "string", issues);
-      expectType(repo.default_branch, `${repoPath}.default_branch`, "string", issues);
-      if (expectType(repo.paths, `${repoPath}.paths`, "array", issues)) {
-        repo.paths.forEach((item, itemIndex) => expectType(item, `${repoPath}.paths[${itemIndex}]`, "string", issues));
+      const repository = readRequiredField(repo, "repository", repoPath, "string", issues);
+      if (repository !== undefined) expectRepositoryIdentifier(repository, `${repoPath}.repository`, issues);
+      const defaultBranch = readRequiredField(repo, "default_branch", repoPath, "string", issues);
+      if (defaultBranch !== undefined) expectNonEmptyString(defaultBranch, `${repoPath}.default_branch`, issues);
+      const paths = readRequiredField(repo, "paths", repoPath, "array", issues);
+      if (paths !== undefined) {
+        if (paths.length === 0) addIssue(issues, `${repoPath}.paths`, "must contain at least one path");
+        paths.forEach((item, itemIndex) => {
+          const itemPath = `${repoPath}.paths[${itemIndex}]`;
+          if (expectType(item, itemPath, "string", issues)) expectNonEmptyString(item, itemPath, issues);
+        });
       }
     });
   }
