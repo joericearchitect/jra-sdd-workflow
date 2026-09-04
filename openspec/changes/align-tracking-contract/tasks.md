@@ -37,7 +37,7 @@
   Evidence: review records no remaining drift or identifies an actionable
   blocker; a second repair request triggers design review rather than a third
   implementation attempt.
-- [ ] 3.3 Correct the Node 20 delivery command so shell expansion supplies the
+- [x] 3.3 Correct the Node 20 delivery command so shell expansion supplies the
   existing validator test files to Node, and keep required local guidance
   aligned. Depends on: 3.1. Evidence: a fresh pull-request validation workflow
   runs all validator tests and passes without changing the selected test set.
