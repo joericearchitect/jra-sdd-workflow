@@ -365,18 +365,25 @@ function sortObjectKeys(value) {
   return Object.fromEntries(Object.keys(value).sort().map((key) => [key, sortObjectKeys(value[key])]));
 }
 
+function compareResourceKeys(left, right, { worktreeFirst }) {
+  const leftKey = left.key ?? left;
+  const rightKey = right.key ?? right;
+  if (leftKey.change !== rightKey.change) return leftKey.change.localeCompare(rightKey.change);
+  if (leftKey.role !== rightKey.role) return leftKey.role.localeCompare(rightKey.role);
+  if (leftKey.kind !== rightKey.kind) {
+    return worktreeFirst
+      ? leftKey.kind === "worktree" ? -1 : 1
+      : leftKey.kind.localeCompare(rightKey.kind);
+  }
+  return leftKey.attempt - rightKey.attempt;
+}
+
 export function normalizeWorkspaceCleanup(value) {
   const clone = sortObjectKeys(structuredClone(value));
   if (Array.isArray(clone.resources)) {
-    clone.resources.sort((left, right) => {
-      if (clone.record_type !== "cleanup-run-v1") return resourceKey(left).localeCompare(resourceKey(right));
-      const leftKey = left.key;
-      const rightKey = right.key;
-      if (leftKey.change !== rightKey.change) return leftKey.change.localeCompare(rightKey.change);
-      if (leftKey.role !== rightKey.role) return leftKey.role.localeCompare(rightKey.role);
-      if (leftKey.kind !== rightKey.kind) return leftKey.kind === "worktree" ? -1 : 1;
-      return leftKey.attempt - rightKey.attempt;
-    });
+    clone.resources.sort((left, right) => compareResourceKeys(left, right, {
+      worktreeFirst: clone.record_type === "cleanup-run-v1"
+    }));
     for (const entry of clone.resources) {
       if (Array.isArray(entry.friction_codes)) entry.friction_codes.sort();
     }
@@ -436,16 +443,16 @@ export function classifyResource(resource, observation, { gatesReady = false } =
 
 export function validateActionOrder(resources) {
   const issues = [];
-  const completedWorktrees = new Set();
   resources.forEach((entry, index) => {
     if (!object(entry?.key)) return;
     const roleKey = `${entry.key.change}/${entry.key.role}`;
-    if (entry.key.kind === "worktree" && ["completed", "already-absent"].includes(entry.outcome)) completedWorktrees.add(roleKey);
     if (entry.key.kind === "branch" && entry.authorized_action === "delete-local-branch" && ["completed", "failed"].includes(entry.outcome)) {
-      const hasAssociatedWorktree = resources.some((candidate) => candidate?.key?.kind === "worktree" &&
-        `${candidate.key.change}/${candidate.key.role}` === roleKey);
-      if (hasAssociatedWorktree && !completedWorktrees.has(roleKey)) {
-        issue(issues, `$.resources[${index}]`, "worktree outcome must be complete before its branch action");
+      const incompleteOrLaterWorktree = resources.some((worktree, worktreeIndex) =>
+        worktree?.key?.kind === "worktree" &&
+        `${worktree.key.change}/${worktree.key.role}` === roleKey &&
+        (!["completed", "already-absent"].includes(worktree.outcome) || worktreeIndex > index));
+      if (incompleteOrLaterWorktree) {
+        issue(issues, `$.resources[${index}]`, "every worktree outcome must be complete before its branch action");
       }
     }
   });

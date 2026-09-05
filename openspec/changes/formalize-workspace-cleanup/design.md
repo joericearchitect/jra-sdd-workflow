@@ -60,11 +60,12 @@ relative location `sdd/workspace-cleanup/v1/`. Each selected change has a
 `register.json` and a `receipts/` directory. No portable file stores the
 resolved absolute directory.
 
-JSON is selected for the first version because Node can parse it without a new
-dependency and exact schema fixtures remain compact. One checked-in
+JSON is selected for the first version because Node can parse it without a
+runtime dependency and exact schema fixtures remain compact. One checked-in
 `schemas/workspace-cleanup-v1.schema.json` describes both register and receipt
-documents. A focused validator applies security and live-invariant checks that
-JSON Schema cannot express alone.
+documents. Ajv is a development-only test dependency that compiles that schema
+against the shared fixture corpus; the focused runtime validator applies
+security and live-invariant checks that JSON Schema cannot express alone.
 
 This preserves portability across supported assistants and linked worktrees:
 only the relative record layout is versioned, while every machine-local root is
@@ -268,10 +269,11 @@ Objective completion evidence consists of:
 
 The change adds original repository documentation, schemas, fixtures, and
 Node.js validation code under the repository's existing license. It copies no
-third-party implementation and introduces no dependency or service. Git and
-GitHub interfaces are used through their documented command outputs; any later
-reuse of agent-skills code requires a separate attribution and license review
-in that repository.
+third-party implementation and introduces only the Ajv development dependency
+used to test schema conformance; the validator runtime and CLI add no runtime
+dependency or service. Git and GitHub interfaces are used through their
+documented command outputs; any later reuse of agent-skills code requires a
+separate attribution and license review in that repository.
 
 ## Recovery
 

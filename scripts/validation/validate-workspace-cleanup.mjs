@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import path from "node:path";
-import { parseWorkspaceCleanupJson, readWorkspaceCleanupFile } from "./lib/workspace-cleanup.mjs";
+import { normalizeWorkspaceCleanup, parseWorkspaceCleanupJson, validateWorkspaceCleanupObject } from "./lib/workspace-cleanup.mjs";
 import fs from "node:fs";
 
 function parseArgs(argv) {
@@ -38,28 +38,35 @@ function parseArgs(argv) {
 try {
   const args = parseArgs(process.argv.slice(2));
   if (!args.filePath) throw new Error("usage: validate-workspace-cleanup.mjs [--json] [--change <name>] [--register <register.json>] [--project-configured | --no-project] <record.json>");
-  const register = args.registerPath ? parseWorkspaceCleanupJson(fs.readFileSync(args.registerPath, "utf8")) : undefined;
-  const result = readWorkspaceCleanupFile(args.filePath, {
+  const value = parseWorkspaceCleanupJson(fs.readFileSync(args.filePath, "utf8"));
+  let register;
+  if (value.record_type === "workspace-cleanup-register-v1") {
+    if (args.registerPath) throw new Error("--register is valid only for cleanup receipts");
+    if (args.projectConfigured !== undefined) throw new Error("Project policy flags are valid only for cleanup receipts");
+  } else if (value.record_type === "cleanup-run-v1") {
+    if (!args.registerPath) throw new Error("receipt validation requires --register <register.json>");
+    if (path.basename(args.registerPath) !== "register.json") throw new Error("referenced register filename must be register.json");
+    if (args.projectConfigured === undefined) throw new Error("receipt validation requires --project-configured or --no-project");
+    register = parseWorkspaceCleanupJson(fs.readFileSync(args.registerPath, "utf8"));
+  }
+  const validation = validateWorkspaceCleanupObject(value, {
     expectedChange: args.expectedChange,
     register,
     projectConfigured: args.projectConfigured
   });
-  const output = { valid: result.validation.valid, issues: result.validation.issues, normalized: result.normalized };
+  const output = { valid: validation.valid, issues: validation.issues, normalized: validation.valid ? normalizeWorkspaceCleanup(value) : null };
   if (output.valid) {
-    if (result.value.record_type === "workspace-cleanup-register-v1" && path.basename(args.filePath) !== "register.json") {
+    if (value.record_type === "workspace-cleanup-register-v1" && path.basename(args.filePath) !== "register.json") {
       throw new Error("register record filename must be register.json");
     }
-    if (result.value.record_type === "cleanup-run-v1") {
-      if (!args.registerPath) throw new Error("receipt validation requires --register <register.json>");
-      if (path.basename(args.registerPath) !== "register.json") throw new Error("referenced register filename must be register.json");
-      if (args.projectConfigured === undefined) throw new Error("receipt validation requires --project-configured or --no-project");
-      if (path.basename(args.filePath) !== `cleanup-run-${result.value.run}.json`) {
+    if (value.record_type === "cleanup-run-v1") {
+      if (path.basename(args.filePath) !== `cleanup-run-${value.run}.json`) {
         throw new Error("receipt filename must match cleanup-run-<run>.json");
       }
     }
   }
   if (args.json) console.log(JSON.stringify(output, null, 2));
-  else if (output.valid) console.log(`Workspace cleanup ${result.value.record_type} validation passed for ${result.value.change}`);
+  else if (output.valid) console.log(`Workspace cleanup ${value.record_type} validation passed for ${value.change}`);
   else for (const item of output.issues) console.error(`${item.path}: ${item.message}${item.expected ? `; expected ${item.expected}` : ""}`);
   process.exit(output.valid ? 0 : 1);
 } catch (error) {

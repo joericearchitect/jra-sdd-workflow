@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import Ajv2020 from "ajv/dist/2020.js";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -142,12 +143,23 @@ test("valid register and receipt round-trip to deterministic normalized records"
   assert.equal(second, first);
 
   const schema = JSON.parse(fs.readFileSync(path.join(repoRoot, "schemas/workspace-cleanup-v1.schema.json"), "utf8"));
+  const validateSchema = new Ajv2020({
+    allErrors: true,
+    strictSchema: true,
+    strictRequired: false,
+    strictTypes: false
+  }).compile(schema);
   assert.equal(schema.$id, "urn:workspace-cleanup:v1");
-  assert.deepEqual(schema.oneOf, [{ $ref: "#/$defs/register" }, { $ref: "#/$defs/receipt" }]);
-  assert.ok(schema.$defs.resourceKey.required.includes("kind"));
-  assert.equal(schema.$defs.resource.allOf.length, 3);
-  assert.equal(schema.$defs.receiptResource.allOf.length, 5);
-  assert.equal(schema.$defs.receipt.allOf.length, 6);
+  assert.equal(validateSchema(register), true, JSON.stringify(validateSchema.errors));
+  assert.equal(validateSchema(receipt), true, JSON.stringify(validateSchema.errors));
+
+  const missingRequired = validRegister();
+  delete missingRequired.resources[0].kind;
+  assert.equal(validateSchema(missingRequired), false);
+
+  const illTyped = validReceipt();
+  illTyped.run = "1";
+  assert.equal(validateSchema(illTyped), false);
 });
 
 test("register enforces complete compound keys, unique resources, and positive contiguous attempts", () => {
@@ -317,6 +329,21 @@ test("receipts cover every registered resource and enforce worktree-before-branc
   assert.equal(validateActionOrder(reversed.resources).valid, false);
   assertInvalid(reversed, "$.resources[0]");
 
+  const multipleWorktrees = structuredClone(receipt);
+  multipleWorktrees.resources = [
+    receiptEntry(worktree(), { classification: "already-absent", authorized_action: "none", outcome: "already-absent" }),
+    receiptEntry(worktree("implementation", {
+      attempt: 2,
+      starting_commit: lifecycleDeliveredCommit,
+      intended_identity: "example-implementation-2",
+      actual_identity: "example-implementation-2",
+      associated_branch: key("implementation", "branch", 1)
+    }), { key: key("implementation", "worktree", 2), outcome: "pending" }),
+    receiptEntry(branch(), { outcome: "completed" })
+  ];
+  assert.equal(validateActionOrder(multipleWorktrees.resources).valid, false);
+  assertInvalid(multipleWorktrees, "$.resources[2]");
+
   const started = validReceipt(register);
   started.status = "started";
   for (const resource of started.resources) resource.outcome = "pending";
@@ -324,6 +351,15 @@ test("receipts cover every registered resource and enforce worktree-before-branc
 
   const normalized = normalizeWorkspaceCleanup(receipt);
   assert.equal(validateReceiptObject(normalized, { register }).valid, true);
+
+  const numericAttempts = normalizeWorkspaceCleanup({
+    record_type: "workspace-cleanup-register-v1",
+    resources: [
+      { ...key("implementation", "branch", 10) },
+      { ...key("implementation", "branch", 2) }
+    ]
+  });
+  assert.deepEqual(numericAttempts.resources.map((resource) => resource.attempt), [2, 10]);
 
   const missingDelivery = validRegister();
   delete missingDelivery.resources[0].delivery;
@@ -479,6 +515,13 @@ test("CLI succeeds on an explicit record and fails with bounded path-free diagno
     assert.equal(missingReceiptContext.status, 2);
     assert.match(missingReceiptContext.stderr, /requires --register/);
 
+    const missingPolicy = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", "--register", registerPath, receiptPath], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(missingPolicy.status, 2);
+    assert.match(missingPolicy.stderr, /requires --project-configured or --no-project/);
+
     const alternateRegisterPath = path.join(directory, "alternate-register.json");
     fs.writeFileSync(alternateRegisterPath, JSON.stringify(validRegister()));
     const wrongRegisterName = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", "--register", alternateRegisterPath, "--no-project", receiptPath], {
@@ -501,6 +544,43 @@ test("CLI succeeds on an explicit record and fails with bounded path-free diagno
     });
     assert.equal(missingOptionValue.status, 2);
     assert.match(missingOptionValue.stderr, /--change requires a value/);
+
+    const wrongRegisterFilename = path.join(directory, "not-register.json");
+    fs.writeFileSync(wrongRegisterFilename, JSON.stringify(validRegister()));
+    const positionalWrongName = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", wrongRegisterFilename], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(positionalWrongName.status, 2);
+    assert.match(positionalWrongName.stderr, /register record filename must be register.json/);
+
+    const ignoredRegister = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", "--register", path.join(directory, "missing-register.json"), registerPath], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(ignoredRegister.status, 2);
+    assert.match(ignoredRegister.stderr, /--register is valid only for cleanup receipts/);
+
+    const unknownOption = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", "--unknown", registerPath], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(unknownOption.status, 2);
+    assert.match(unknownOption.stderr, /unknown option/);
+
+    const extraPosition = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", registerPath, receiptPath], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(extraPosition.status, 2);
+    assert.match(extraPosition.stderr, /unexpected extra positional argument/);
+
+    const jsonOutput = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", "--json", registerPath], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert.equal(jsonOutput.status, 0, jsonOutput.stderr);
+    assert.equal(JSON.parse(jsonOutput.stdout).valid, true);
 
     fs.writeFileSync(registerPath, JSON.stringify({ ...validRegister(), token: "never-print-this" }));
     const failure = spawnSync(process.execPath, ["scripts/validation/validate-workspace-cleanup.mjs", registerPath], {

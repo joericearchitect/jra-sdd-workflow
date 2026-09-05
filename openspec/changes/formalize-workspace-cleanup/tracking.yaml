@@ -12,6 +12,9 @@ implementation_repositories:
     default_branch: main
     paths:
       - ai-planning/design-briefs/post-archive-workspace-cleanup.md
+      - .github/workflows/validate.yml
+      - package.json
+      - package-lock.json
       - schemas/workspace-cleanup-v1.schema.json
       - scripts/validation/lib/workspace-cleanup.mjs
       - scripts/validation/validate-workspace-cleanup.mjs

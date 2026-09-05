@@ -114,6 +114,13 @@ The expected workflow selection is:
 ["explore","propose","apply","verify","sync","archive"]
 ```
 
+Install the locked development dependencies before running the repository's
+validator tests:
+
+```bash
+npm ci
+```
+
 ## Initialize or Adopt OpenSpec Elsewhere
 
 Use this procedure only for a repository that has not already been initialized.
