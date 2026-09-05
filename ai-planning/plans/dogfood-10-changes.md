@@ -49,15 +49,16 @@ does not qualify.
 
 - GitHub issue [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1)
   exists for candidate 1 and is on the configured Project in its initial state.
-- No OpenSpec change has been created yet.
-- Candidate 1 is blocked by the preflight repairs in
+- PF1 and PF2 are delivered and archived; their issue, pull-request, archive,
+  and observation evidence is recorded below. PF3 remains pending.
+- Candidate 1 remains blocked by the uncompleted PF3 preflight repair in
   [review disposition `DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
   Raw model review output remains temporary scratch; this disposition is the
   durable source for the accepted findings and repair scope.
-- The baseline has 9 passing Node tests; the hardcoded-environment validator
+- At planning baseline, the repository had 9 passing Node tests; the hardcoded-environment validator
   passes; `openspec validate --all --strict` reports no items to validate.
-- These planning files are included in the planning-only preflight commit before
-  candidate 1 proceeds.
+- The planning files are durable; PF3 can begin only after its separate
+  preflight intake and Explore work.
 
 Status values are alternatives, not a mandatory sequence:
 `Not started` | `In progress` | `Blocked` | `Done`.
@@ -241,6 +242,14 @@ Complete once before candidate 1:
    are supporting machinery. Report generated entry-point size separately so
    the classification remains visible. Stop for review if cumulative supporting
    machinery approaches three times the product it supports.
+
+## Preflight delivery evidence
+
+| Repair | Issue | Implementation delivery | Lifecycle record | Archive and observation state |
+|---|---|---|---|---|
+| PF1 `align-tracking-contract` | [#2](https://github.com/joericearchitect/jra-sdd-workflow/issues/2) | [PR #3](https://github.com/joericearchitect/jra-sdd-workflow/pull/3) | [PR #4](https://github.com/joericearchitect/jra-sdd-workflow/pull/4) | [Archived change](../../openspec/changes/archive/2026-09-04-align-tracking-contract/). Its resources predate the cleanup contract and remain legacy rather than qualifying cleanup evidence. |
+| PF2 `align-artifact-quality-gates` | [#8](https://github.com/joericearchitect/jra-sdd-workflow/issues/8) | [PR #9](https://github.com/joericearchitect/jra-sdd-workflow/pull/9) | [PR #10](https://github.com/joericearchitect/jra-sdd-workflow/pull/10) | [Archived change](../../openspec/changes/archive/2026-09-05-align-artifact-quality-gates/); OBS-005 records the first qualifying manual cleanup run. |
+| PF3 `make-dogfood-entry-coherent` | Not created | Not started | Not started | The remaining preflight blocker; begin only after separate intake and Explore. |
 
 ## Per-change loop
 

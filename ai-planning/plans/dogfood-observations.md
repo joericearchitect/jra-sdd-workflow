@@ -105,6 +105,56 @@ review; it does not approve implementation.
 - Automation conclusion: none; these are manual preflight repairs and do not
   justify a controller or campaign automation.
 
+### OBS-005 — PF2 completed the first qualifying manual cleanup run
+
+- Candidate/change: campaign preflight / PF2 `align-artifact-quality-gates`.
+- Phase: implementation delivery, lifecycle-record delivery, and Workspace
+  cleanup.
+- Expected behavior: artifact-quality requirements are delivered through the
+  two-PR lifecycle, then only exact registered local resources are manually
+  cleaned after all delivery gates pass.
+- Observed behavior: [issue #8](https://github.com/joericearchitect/jra-sdd-workflow/issues/8),
+  [implementation PR #9](https://github.com/joericearchitect/jra-sdd-workflow/pull/9),
+  and [lifecycle-record PR #10](https://github.com/joericearchitect/jra-sdd-workflow/pull/10)
+  were delivered. The change is [archived](../../openspec/changes/archive/2026-09-05-align-artifact-quality-gates/),
+  the living specification is synchronized, and the issue's configured Project
+  item is Done.
+- Evidence: the merged PRs, archived change, synchronized living spec, and the
+  validated local cleanup receipt. Authorization-pause dispositions are
+  recorded in [PF2 pause observations](../notes/pf2-authorization-pause-observations.md).
+- Blocker or impact: the reusable cleanup helper rejected the repository's
+  valid register because it requires fields that the repository schema does not
+  own. Receipt persistence also first stopped safely because the exact
+  change-owned `receipts/` directory was absent. Manual cleanup then completed
+  from the validated repository contract.
+- Documented exit/recovery: retain exact-target cleanup authorization; use the
+  repository validator and receipt as the authority; resolve helper/register
+  ownership in a later design change rather than fabricating fields.
+- Recovery attempts and result: the missing receipts directory was created,
+  the receipt revalidated, and all registered resources were cleaned. A stale
+  primary-checkout merge warning was resolved by proving each exact topic head
+  was in current `origin/main` before local branch deletion.
+- Prior matching occurrences: none. These are one-run observations.
+- Skipped, unavailable, or unresolved evidence: remote branch deletion is
+  outside the Workspace cleanup contract and is handled as a separate,
+  verified Git operation. The helper/register ownership mismatch remains open
+  for later design review.
+- Possible post-campaign improvement: evaluate authorization consolidation,
+  receipt-directory initialization, default-branch ancestry evidence, and the
+  helper/register contract only after the campaign's repeated-run threshold.
+- Workspace cleanup schema/run: v1 / 1.
+- Registered and final outcome counts: 4 registered resources; 4 completed
+  exact local actions.
+- Resume used: No.
+- Manual effort and bounded friction codes: action entries recorded 0 whole
+  minutes; `AUTHORIZATION-PAUSE-DENSITY`,
+  `CLEANUP-HELPER-CONTRACT-MISMATCH`, `RECEIPT-DIRECTORY-MISSING`, and
+  `STALE-PRIMARY-BRANCH-WARNING`.
+- Qualifying cleanup run: Yes; it began with registered resources, every
+  delivery gate passed, and its validated receipt is complete.
+- Automation conclusion: none. One qualifying run is below the ten-run and
+  repeated-friction thresholds, and no authorization or recovery gate changes.
+
 ## Per-change observation template
 
 Copy this section for each material event. Use `None observed` when a phase ran
