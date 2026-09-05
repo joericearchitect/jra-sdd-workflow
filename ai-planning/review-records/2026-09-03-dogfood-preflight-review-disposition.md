@@ -104,7 +104,7 @@ Approval evidence: repository owner, 2026-09-03T21:34:07Z. Decision digest:
 
 Assumptions:
 
-- The `ai-planning/code-reviews` ignore rule is intentional local hygiene.
+- The `../scratch` ignore rule is intentional local hygiene.
 - This record authorizes only the planning-document edits that create and link
   it. It does not authorize GitHub mutation, an OpenSpec proposal, Apply, merge,
   Sync, Archive, or candidate 1.
