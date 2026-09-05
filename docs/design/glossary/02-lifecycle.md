@@ -4,14 +4,16 @@ Terms for the ordered steps that every piece of work passes through.
 
 ## Lifecycle
 
-The fixed sequence of phases a change goes through, from idea to finished and
-filed away. This project's lifecycle is:
-explore → propose → apply → verify → sync → archive.
+The ordered path a change follows from idea to delivered, filed, and locally
+retired. Its selected OpenSpec actions are explore → propose → apply → verify →
+sync → archive. Repository stages then make the archive durable through a
+lifecycle-record PR and clean exact registered local resources.
 
 **Terminology Source:** Industry — software engineering (SDLC); the specific
 six-phase sequence is this framework's.
 
-**Related:** explore, propose, apply, verify, sync, archive
+**Related:** explore, propose, apply, verify, sync, archive, lifecycle-record
+PR, Workspace cleanup
 
 ## Explore
 
@@ -88,14 +90,16 @@ repository.
 
 ## Archive
 
-The filing phase. Confirm the change is delivered and its specs are synced,
-then move the whole change folder into a dated history folder so the intent is
-preserved.
+The filing action. Confirm the implementation is delivered and its specs are
+synced, then move the whole change folder into a dated history folder so the
+intent is preserved. Archive does not merge that record and does not remove a
+branch or worktree; lifecycle-record delivery and Workspace cleanup do those
+separate jobs.
 
 **Terminology Source:** OpenSpec — a workflow action, selected by this
 repository.
 
-**Related:** sync, living specs
+**Related:** sync, living specs, lifecycle-record PR, Workspace cleanup
 
 ## Preflight
 
@@ -118,7 +122,50 @@ is easy to review.
 **Terminology Source:** This repository (jra-sdd-workflow) — a two-PR structure
 invented for this campaign.
 
-**Related:** pull request, sync, archive
+After this PR merges, its archive and living spec are durable on the default
+branch and the change may enter Workspace cleanup.
+
+**Related:** pull request, sync, archive, Workspace cleanup
+
+## Workspace cleanup
+
+The manual repository stage after lifecycle-record delivery. It audits only
+local branches and secondary worktrees that were planned before creation and
+registered after exact Git inspection. A human separately authorizes displayed
+eligible actions, which are re-inspected and recorded in a restartable receipt.
+The primary worktree, remote branches, unrelated work, and unregistered legacy
+resources are always outside its target set.
+
+Workspace cleanup is not a selected OpenSpec action and Archive does not imply
+that it occurred.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a manual
+post-delivery safety stage.
+
+**Related:** archive, lifecycle-record PR, resource register, cleanup receipt
+
+## Resource register
+
+A machine-local JSON record under the repository's shared Git metadata. It
+records intent before resource creation and ownership only after live evidence
+matches. Every entry is keyed by change, role, kind, and attempt. It is outside
+target worktrees so removing one cannot remove its evidence.
+
+**Terminology Source:** This repository (jra-sdd-workflow).
+
+**Related:** Workspace cleanup, cleanup receipt, evidence
+
+## Cleanup receipt
+
+A restartable machine-local record of cleanup gates, classifications,
+authorized actions, completed or preserved outcomes, recovery references,
+manual effort, and bounded friction codes. It prevents a resumed run from
+replaying completed work. Sanitized lessons may be copied to a checked-in
+ledger, but the receipt itself is the local operational evidence.
+
+**Terminology Source:** This repository (jra-sdd-workflow).
+
+**Related:** Workspace cleanup, resource register, evidence
 
 ## Entry/exit conditions
 

@@ -11,6 +11,28 @@ evidence.
 An observation does not authorize a repair or automation. Repeated pain is
 assessed only after the manual campaign completes.
 
+## Workspace cleanup run evidence
+
+For each candidate whose resources are created after the cleanup contract is
+delivered, record a sanitized cleanup summary in its observation. Include the
+cleanup schema version and run number, registered-resource count, eligible /
+already-absent / intentionally-ineligible outcomes, whether resume occurred,
+manual effort, bounded friction codes, and any unresolved recovery reference.
+Do not copy the machine-local register, receipt, absolute paths, raw Git or
+authentication output, or authorization text into this ledger.
+
+A run qualifies toward later automation review only when it starts with at
+least one registered resource, passes every applicable delivery gate, reaches
+a final valid receipt after an exact manual cleanup or preservation decision,
+and has this sanitized entry. A zero-resource exercise does not qualify. Keep a
+running count here only after those facts are evidenced; never infer it from a
+merged pull request or completed Archive action.
+
+Automation review remains closed until there are at least ten qualifying runs,
+the same friction code occurs in at least three independent runs, and no
+relevant safety issue remains unresolved. The threshold opens a separate design
+review; it does not approve implementation.
+
 ## Baseline
 
 | Evidence | Result |
@@ -101,12 +123,19 @@ without friction; do not invent a problem or recovery.
 - Prior matching occurrences:
 - Skipped, unavailable, or unresolved evidence:
 - Possible post-campaign improvement:
+- Workspace cleanup schema/run:
+- Registered and final outcome counts:
+- Resume used:
+- Manual effort and bounded friction codes:
+- Qualifying cleanup run: Yes / No, with reason
 
 ## Campaign summary
 
 Complete during candidate 10:
 
 - Runs completed:
+- Qualifying Workspace cleanup runs:
+- Repeated cleanup friction codes and independent-run counts:
 - Friction counts by phase:
 - Recovery events:
 - Phases with no observed friction:

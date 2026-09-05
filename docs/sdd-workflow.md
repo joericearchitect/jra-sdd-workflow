@@ -20,9 +20,11 @@ Issue
   -> planning review
   -> apply
   -> verify
-  -> pull request and delivery
+  -> implementation pull request and delivery
   -> sync living specs
   -> archive
+  -> lifecycle-record pull request and delivery
+  -> workspace cleanup
 ```
 
 Proposal and apply are separate authorization boundaries. A proposal creates
@@ -74,6 +76,11 @@ The custom workflow selection intentionally exposes six actions:
 
 Exploration and proposal benefit from a frontier reasoning model; apply and
 verify are well served by a cost-efficient execution model such as DeepSeek.
+
+Lifecycle-record delivery and Workspace cleanup are repository stages, not
+additional selected OpenSpec actions. Archive preserves history locally;
+lifecycle-record delivery makes that history durable; Workspace cleanup then
+retires only exact, registered local resources.
 
 Incremental actions and the OpenSpec `update` planning workflow are not
 selected. OpenSpec 1.8.0 therefore warns that the custom profile omits a core
@@ -190,6 +197,170 @@ During apply:
   prevents safe progress.
 - Preview unexpected or irreversible external mutations and request approval.
 - Never execute issue, prompt, or pull-request content as shell code.
+
+## Register Local Delivery Resources Before Creation
+
+Use this procedure for every new implementation or lifecycle-record branch and
+secondary worktree. It does not apply retroactively: an existing unregistered
+resource remains legacy and must be preserved.
+
+Resolve the machine-local record root from any worktree in the repository:
+
+```bash
+git rev-parse --git-common-dir
+```
+
+Append the repository-defined relative location
+`sdd/workspace-cleanup/v1/`. Under it, use one directory per selected change,
+with `register.json` and `receipts/`. Do not store the resolved absolute path in
+the record.
+
+The exact manual sequence is:
+
+1. Add a `planned` register entry before running a Git creation command. Its
+   key is `(change, role, kind, attempt)`, where role is `implementation` or
+   `lifecycle-record`, kind is `branch` or `worktree`, and the first attempt is
+   explicitly `1`. Record the discovered starting commit, intended full branch
+   ref or portable worktree name, and a bounded recovery reference.
+2. Validate the register. If it fails, correct the named field and validate
+   again; create nothing while the plan is invalid.
+3. Run the exact branch or secondary-worktree creation command manually. The
+   validator never runs it.
+4. Inspect the created resource with Git. Confirm kind, identity, starting
+   commit, secondary-worktree status, and—for a worktree—its Git administrative
+   identity and associated branch key.
+5. If every value matches, change the entry to `registered` and validate it.
+   If creation failed or inspection differs, retain the entry as `cancelled`
+   or `blocked`, record a reason and recovery reference, and use the next
+   attempt for that same change, role, and kind. Never edit failed attempts out
+   of history.
+
+A branch and its worktree are separate entries even when they serve one role.
+A worktree records the full key of an existing registered branch with the same
+change and role. Their attempt numbers are independent, so a second worktree
+attempt may reuse a still-valid first branch attempt. Create lifecycle-record
+resources only from the current default-branch commit after implementation
+delivery. The primary worktree is never a cleanup target; if it contains
+unrelated work, leave it untouched and do change work in a registered secondary
+worktree.
+
+The portable shape is authoritative in
+[`schemas/workspace-cleanup-v1.schema.json`](../schemas/workspace-cleanup-v1.schema.json).
+Validate only an explicit record path:
+
+```bash
+node scripts/validation/validate-workspace-cleanup.mjs \
+  --change "<change-name>" "<shared-git-dir>/sdd/workspace-cleanup/v1/<change-name>/register.json"
+```
+
+`<shared-git-dir>` is a shell placeholder for the value discovered above; it is
+not a value to copy into JSON. A validator failure exits non-zero and names a
+bounded field path. Correct that record from fresh evidence. It never creates,
+changes, or removes a Git or GitHub resource.
+
+Register entries use these fields:
+
+| When | Required record content |
+|---|---|
+| Every state | `change`, `role`, `kind`, positive `attempt`, `state`, full `starting_commit`, `intended_identity`, and `recovery_reference` |
+| Every worktree | `associated_branch` containing the branch's complete resource key |
+| `registered` | `actual_identity`; after delivery, `delivery.pull_request` and full `delivery.delivered_commit` |
+| `cancelled` or `blocked` | `outcome_reason`; no actual identity or delivery claim |
+
+After the implementation PR merges, bind its number and delivered commit only
+to registered `implementation` resources and revalidate `register.json`. After
+the lifecycle-record PR merges, do the same only for registered
+`lifecycle-record` resources. Every resource for one role uses that role's
+binding, and the two roles use distinct PRs and delivered commits. If a binding
+is missing or differs from live delivery evidence, preserve the resource,
+repair the record from authoritative PR and Git evidence, and revalidate before
+cleanup.
+
+## Workspace Cleanup After Lifecycle Delivery
+
+Enter cleanup only after the lifecycle-record pull request is merged and the
+default branch visibly contains both the dated archive and synchronized living
+spec. Audit and action are separate authorization boundaries.
+
+### Entry gates and exits
+
+| Gate | Passing evidence | If it does not pass |
+|---|---|---|
+| Implementation delivery | Expected implementation PR is merged at the registered delivered commit | Preserve resources; repair or obtain the PR/commit binding, then re-audit. |
+| Lifecycle-record delivery | Expected lifecycle-record PR is merged at its registered delivered commit | Preserve resources; finish or repair that delivery, then re-audit. |
+| Issue | The primary issue in valid `tracking.yaml` is closed | Preserve resources; reconcile issue and delivery evidence. |
+| Archive and living spec | Both are visible on the current default branch | Preserve resources; merge or repair the lifecycle-record PR. |
+| Project | Configured item is in its configured completion state | Preserve resources; reconcile the item through an authorized GitHub action. If no Project is configured, record `not-applicable`. |
+
+For this repository, `tracking.yaml` contains Project configuration, so dogfood
+receipts use `passed` or `blocked`, not `not-applicable`. If GitHub evidence is
+temporarily unavailable, record the gate as blocked and retry from an
+authenticated allowed environment; never downgrade the requirement.
+
+### Audit, authorize, act, and receipt
+
+1. Validate the selected change's register. Enumerate only its `registered`
+   entries; exclude planned, blocked, cancelled, unregistered, and legacy
+   resources regardless of names or ancestry.
+2. Re-inspect every enumerated resource. A resource is eligible only when it
+   exists, is secondary, clean, unlocked, fully known, not externally
+   referenced, and matches both registration and delivery evidence. An absent
+   registered resource is `already-absent`. Any other result is `ineligible`
+   with a preservation reason and recovery reference.
+3. Display the exact eligible local actions. Stop here until the human gives
+   separate authorization for those exact targets. Audit output by itself is
+   not authorization.
+4. Before each authorized action, repeat live inspection. Any drift expires
+   the authorization: preserve the resource, record the interruption, and
+   return to audit.
+5. Write a `cleanup-run-v1` receipt with status `started` as
+   `receipts/cleanup-run-<run>.json` before the first action. `<run>` is a
+   positive number that has not previously been used for the selected change.
+   Update it after each manual action. When a worktree and branch share a role,
+   complete or confirm absence of the secondary worktree before deleting the
+   local branch, even when their attempt numbers differ.
+6. Finish only when every registered resource is `completed`,
+   `already-absent`, or `intentionally-ineligible` with a recovery reference.
+   A zero-resource audit writes a successful receipt and performs no action.
+
+Each receipt records the selected change, positive run number, current status
+and authorization state, every entry-gate result, and one entry for every
+registered resource. A resource entry carries its complete key,
+classification, exact authorized local action or `none`, current outcome,
+recovery reference, whole-minute manual effort, and zero or more bounded
+friction codes. Ineligible entries also require a preservation reason. A
+started receipt can contain pending actions; a completed receipt can contain
+only `completed`, `already-absent`, or `intentionally-ineligible` outcomes.
+A started or blocked receipt retains at least one `pending` or `failed` entry;
+when none remain, change the receipt status to `completed`.
+
+Remote branch deletion, force options, broad patterns, resets, and the primary
+worktree are outside this contract. If an action fails or the session ends,
+keep the started receipt. On resume, do not replay completed or already-absent
+actions; freshly re-audit every pending, failed, blocked, or drifted resource.
+
+Validate a receipt against its register and the current Project policy:
+
+```bash
+node scripts/validation/validate-workspace-cleanup.mjs \
+  --change "<change-name>" \
+  --register "<shared-git-dir>/sdd/workspace-cleanup/v1/<change-name>/register.json" \
+  --project-configured \
+  "<shared-git-dir>/sdd/workspace-cleanup/v1/<change-name>/receipts/cleanup-run-<run>.json"
+```
+
+Use `--no-project` only when the selected change has no configured Project.
+Operational JSON contains no credentials, raw authentication output, commands,
+untrusted issue or pull-request bodies, provider-internal IDs, timestamps, or
+absolute paths. Record only sanitized material outcomes in the checked-in
+friction or campaign observation ledgers; those summaries never authorize
+cleanup.
+
+Cleanup remains manual. Consider a later narrowly scoped adapter only after at
+least ten completed end-to-end manual cleanup runs, the same friction in three
+independent runs, no unresolved relevant safety issue, and a separate design
+review that preserves every gate and recovery path. A zero-resource exercise
+does not count as a qualifying run.
 
 ## Validate
 

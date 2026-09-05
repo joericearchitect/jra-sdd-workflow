@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:workspace-cleanup:v1",
+  "$comment": "Authority for local workspace-cleanup registers and receipts. The focused validator additionally enforces transition, cross-record, ordering, and security rules.",
+  "title": "Workspace Cleanup Records v1",
+  "oneOf": [
+    { "$ref": "#/$defs/register" },
+    { "$ref": "#/$defs/receipt" }
+  ],
+  "$defs": {
+    "change": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "safeText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{40}(?:[0-9a-fA-F]{24})?$"
+    },
+    "resourceKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["change", "role", "kind", "attempt"],
+      "properties": {
+        "change": { "$ref": "#/$defs/change" },
+        "role": { "enum": ["implementation", "lifecycle-record"] },
+        "kind": { "enum": ["branch", "worktree"] },
+        "attempt": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "branchKey": {
+      "allOf": [
+        { "$ref": "#/$defs/resourceKey" },
+        { "properties": { "kind": { "const": "branch" } } }
+      ]
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pull_request", "delivered_commit"],
+      "properties": {
+        "pull_request": { "type": "integer", "minimum": 1 },
+        "delivered_commit": { "$ref": "#/$defs/commit" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "change",
+        "role",
+        "kind",
+        "attempt",
+        "state",
+        "starting_commit",
+        "intended_identity",
+        "recovery_reference"
+      ],
+      "properties": {
+        "change": { "$ref": "#/$defs/change" },
+        "role": { "enum": ["implementation", "lifecycle-record"] },
+        "kind": { "enum": ["branch", "worktree"] },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "state": { "enum": ["planned", "registered", "cancelled", "blocked"] },
+        "starting_commit": { "$ref": "#/$defs/commit" },
+        "intended_identity": { "$ref": "#/$defs/safeText" },
+        "actual_identity": { "$ref": "#/$defs/safeText" },
+        "associated_branch": { "$ref": "#/$defs/branchKey" },
+        "delivery": { "$ref": "#/$defs/delivery" },
+        "outcome_reason": { "$ref": "#/$defs/safeText" },
+        "recovery_reference": { "$ref": "#/$defs/safeText" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "registered" } }, "required": ["state"] },
+          "then": { "required": ["actual_identity"] },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["actual_identity"] },
+                { "required": ["delivery"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": { "properties": { "state": { "enum": ["cancelled", "blocked"] } }, "required": ["state"] },
+          "then": { "required": ["outcome_reason"] },
+          "else": { "not": { "required": ["outcome_reason"] } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "worktree" } }, "required": ["kind"] },
+          "then": { "required": ["associated_branch"] },
+          "else": { "not": { "required": ["associated_branch"] } }
+        }
+      ]
+    },
+    "register": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "record_type", "change", "resources"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "record_type": { "const": "workspace-cleanup-register-v1" },
+        "change": { "$ref": "#/$defs/change" },
+        "resources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/resource" }
+        }
+      }
+    },
+    "gateResult": {
+      "enum": ["passed", "blocked"]
+    },
+    "entryGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implementation_pull_request",
+        "lifecycle_record_pull_request",
+        "issue",
+        "archive",
+        "living_spec",
+        "project"
+      ],
+      "properties": {
+        "implementation_pull_request": { "$ref": "#/$defs/gateResult" },
+        "lifecycle_record_pull_request": { "$ref": "#/$defs/gateResult" },
+        "issue": { "$ref": "#/$defs/gateResult" },
+        "archive": { "$ref": "#/$defs/gateResult" },
+        "living_spec": { "$ref": "#/$defs/gateResult" },
+        "project": { "enum": ["passed", "blocked", "not-applicable"] }
+      }
+    },
+    "receiptResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "classification",
+        "authorized_action",
+        "outcome",
+        "recovery_reference",
+        "manual_effort_minutes",
+        "friction_codes"
+      ],
+      "properties": {
+        "key": { "$ref": "#/$defs/resourceKey" },
+        "classification": { "enum": ["eligible", "already-absent", "ineligible"] },
+        "authorized_action": { "enum": ["none", "remove-worktree", "delete-local-branch"] },
+        "outcome": { "enum": ["pending", "completed", "already-absent", "intentionally-ineligible", "failed"] },
+        "preservation_reason": { "$ref": "#/$defs/safeText" },
+        "recovery_reference": { "$ref": "#/$defs/safeText" },
+        "manual_effort_minutes": { "type": "integer", "minimum": 0 },
+        "friction_codes": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "classification": { "const": "ineligible" } }, "required": ["classification"] },
+          "then": {
+            "required": ["preservation_reason"],
+            "properties": {
+              "authorized_action": { "const": "none" },
+              "outcome": { "enum": ["pending", "intentionally-ineligible"] }
+            }
+          },
+          "else": { "not": { "required": ["preservation_reason"] } }
+        },
+        {
+          "if": { "properties": { "classification": { "const": "eligible" } }, "required": ["classification"] },
+          "then": {
+            "properties": {
+              "authorized_action": { "enum": ["remove-worktree", "delete-local-branch"] },
+              "outcome": { "enum": ["pending", "completed", "failed"] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "classification": { "const": "already-absent" } }, "required": ["classification"] },
+          "then": {
+            "properties": {
+              "authorized_action": { "const": "none" },
+              "outcome": { "const": "already-absent" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "classification": { "const": "eligible" },
+              "key": {
+                "properties": { "kind": { "const": "worktree" } },
+                "required": ["kind"]
+              }
+            },
+            "required": ["classification", "key"]
+          },
+          "then": { "properties": { "authorized_action": { "const": "remove-worktree" } } }
+        },
+        {
+          "if": {
+            "properties": {
+              "classification": { "const": "eligible" },
+              "key": {
+                "properties": { "kind": { "const": "branch" } },
+                "required": ["kind"]
+              }
+            },
+            "required": ["classification", "key"]
+          },
+          "then": { "properties": { "authorized_action": { "const": "delete-local-branch" } } }
+        }
+      ]
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "record_type",
+        "change",
+        "run",
+        "status",
+        "authorization",
+        "entry_gates",
+        "resources"
+      ],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "record_type": { "const": "cleanup-run-v1" },
+        "change": { "$ref": "#/$defs/change" },
+        "run": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["started", "completed", "blocked"] },
+        "authorization": { "enum": ["not-authorized", "authorized", "expired"] },
+        "entry_gates": { "$ref": "#/$defs/entryGates" },
+        "resources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/receiptResource" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "resources": {
+                "items": {
+                  "properties": {
+                    "outcome": { "enum": ["completed", "already-absent", "intentionally-ineligible"] }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "started" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "resources": {
+                "contains": {
+                  "properties": { "outcome": { "enum": ["pending", "failed"] } },
+                  "required": ["outcome"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "authorization": { "const": "not-authorized" } }, "required": ["authorization"] },
+          "then": {
+            "properties": {
+              "resources": {
+                "items": {
+                  "not": {
+                    "properties": { "classification": { "const": "eligible" } },
+                    "required": ["classification"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "authorization": { "const": "expired" } }, "required": ["authorization"] },
+          "then": { "properties": { "status": { "const": "blocked" } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "blocked" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "authorization": { "enum": ["not-authorized", "expired"] },
+              "resources": {
+                "contains": {
+                  "properties": { "outcome": { "enum": ["pending", "failed"] } },
+                  "required": ["outcome"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "authorization": { "const": "authorized" } }, "required": ["authorization"] },
+          "then": {
+            "properties": {
+              "entry_gates": {
+                "properties": {
+                  "implementation_pull_request": { "const": "passed" },
+                  "lifecycle_record_pull_request": { "const": "passed" },
+                  "issue": { "const": "passed" },
+                  "archive": { "const": "passed" },
+                  "living_spec": { "const": "passed" },
+                  "project": { "enum": ["passed", "not-applicable"] }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

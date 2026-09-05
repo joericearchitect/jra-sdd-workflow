@@ -33,6 +33,14 @@ does not qualify.
   implementation delivery. The campaign row remains `In progress` until the
   lifecycle-record PR makes Sync and Archive durable; that temporary difference
   is expected and recorded rather than silently reconciled.
+- Every dogfood resource created after the Workspace cleanup contract reaches
+  the default branch is planned before Git creation and registered only after
+  exact inspection. Implementation and lifecycle-record branches and secondary
+  worktrees have separate machine-local records keyed by change, role, kind,
+  and attempt. Existing unregistered resources remain legacy and preserved.
+- After lifecycle-record delivery, each candidate enters manual Workspace
+  cleanup. Audit, authorization, live reinspection, action, and restartable
+  receipt are separate steps; Archive never implies resource removal.
 - Values such as repository, owner, Project, branch, labels, issue number, and
   paths are discovered from the current environment or supplied configuration.
   They are not copied from examples.
@@ -261,27 +269,59 @@ Repeat for each candidate, without overlapping active changes:
 5. **Planning review and Apply authorization** — review scope, non-goals,
    requirements, design decisions, tasks, dependencies, recovery, and evidence.
    Apply starts only after explicit authorization for the named change.
-6. **Apply** — implement ordered tasks and mark a task complete only when its
+6. **Register implementation workspace** — under the derived shared Git
+   metadata root, plan separate implementation branch and worktree entries
+   before manual creation; inspect and register exact matches. Preserve the
+   primary worktree and retain failed attempts as cancelled or blocked history.
+7. **Apply** — implement ordered tasks and mark a task complete only when its
    current `Evidence:` exists. On a second repair to the same component, pause
    for design review instead of attempting a third fix.
-7. **Verify and rerun gates** — invoke Verify, resolve objective findings within
+8. **Verify and rerun gates** — invoke Verify, resolve objective findings within
    the agreed scope, rerun affected focused checks, then rerun the complete
    validation set from step 4.
-8. **Implementation PR** — open a PR containing `Closes #N` and
+9. **Implementation PR** — open a PR containing `Closes #N` and
    `OpenSpec change: <change>`. Merge only after review and CI are green. Confirm
    the issue is closed and delivery evidence names the merged commit and PR.
-   Record any resulting Project completion while leaving the campaign row
-   `In progress`.
-9. **Sync and Archive** — from the merged head, invoke the selected Sync action,
+   Bind only registered implementation resources to that PR and commit,
+   revalidate the register, and record any resulting Project completion while
+   leaving the campaign row `In progress`.
+10. **Sync and Archive** — from the merged head, invoke the selected Sync action,
    verify living specs, then invoke Archive. Archive only after its delivery and
    closed-issue gates pass.
-10. **Lifecycle-record PR** — commit only the synced living specs, archived
+11. **Register and deliver lifecycle records** — from the current default
+    branch, separately plan, create manually, inspect, and register the
+    lifecycle-record branch and optional secondary worktree. Commit only the
+    synced living specs, archived
     change, and campaign-ledger updates. Open a PR containing `Related to #N`
-    and `OpenSpec change: <change>`. Merge after linkage CI and validation pass.
-11. **Close the loop** — confirm the lifecycle-record commit is on the default
+    and `OpenSpec change: <change>`. Merge after linkage CI and validation pass;
+    bind only registered lifecycle-record resources to that PR and commit, then
+    revalidate the register.
+12. **Workspace cleanup** — confirm delivery gates, audit only registered
+    selected-change resources, and display exact eligible local actions. After
+    separate authorization, re-inspect and perform exact manual actions with a
+    started receipt, worktree before branch. Preserve any primary, remote,
+    unregistered, dirty, locked, unknown, mismatched, externally referenced, or
+    state-drifted resource and follow its recorded exit.
+13. **Close the loop** — confirm the lifecycle-record commit is on the default
     branch, confirm the Project reflects implementation delivery, mark the
-    campaign candidate `Done`, and record friction, recovery, checks, URLs, and
-    skipped or blocked evidence in `dogfood-observations.md`.
+    campaign candidate `Done`, and record cleanup qualification, friction,
+    recovery, checks, URLs, and skipped or blocked evidence in
+    `dogfood-observations.md`.
+
+## Workspace cleanup evidence threshold
+
+A qualifying manual cleanup run must have at least one registered resource,
+complete every applicable delivery gate, carry a fresh audit through an exact
+manual cleanup or preservation decision, finish a valid receipt, and record a
+sanitized observation. A zero-resource exercise is a useful safety test but
+does not count. Interrupted work counts only after resume produces a finished
+receipt; separate attempts within one change remain one run.
+
+Cleanup stays manual throughout the campaign. Evidence may trigger a later
+design review only after at least ten qualifying end-to-end runs, the same
+bounded friction in at least three independent runs, no unresolved relevant
+safety issue, and a proposed adapter that is narrow and proportionate. Meeting
+the threshold permits review; it does not authorize automation.
 
 ## Exit criteria
 
@@ -290,6 +330,9 @@ The workflow is proven for this campaign only when:
 - All ten candidates are `Done` on the default branch.
 - Every candidate has one issue, one merged implementation PR, one merged
   lifecycle-record PR, a valid archived change, and synchronized living specs.
+- Every candidate whose resources were created after the cleanup contract was
+  delivered has a finished valid cleanup receipt, or an explicit unresolved
+  blocker that keeps the candidate from `Done`.
 - Issue, Project, tracking, PR, spec, task, archive, and commit identifiers agree.
 - All required tests and validators pass at each candidate's final lifecycle
   commit; skipped or unavailable evidence is recorded rather than treated as

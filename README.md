@@ -22,8 +22,9 @@ delivery produces evidence rather than claims.
 
 ## The lifecycle
 
-```
-explore -> propose -> apply -> verify -> sync -> archive
+```text
+explore -> propose -> apply -> verify -> implementation delivery
+        -> sync -> archive -> lifecycle-record delivery -> workspace cleanup
 ```
 
 | Phase | What happens |
@@ -33,7 +34,19 @@ explore -> propose -> apply -> verify -> sync -> archive
 | **apply** | Implement the tasks. |
 | **verify** | Confirm the implementation matches the artifacts, with evidence. |
 | **sync** | Fold delta specs into the living specifications. |
-| **archive** | Close the change and retire its working resources. |
+| **archive** | Preserve the completed change as dated history after its delivery checks pass. |
+
+Two repository stages finish the work around those selected OpenSpec actions:
+
+- **lifecycle-record delivery** merges the synchronized living spec and dated
+  archive so they are durable on the default branch;
+- **workspace cleanup** audits only pre-registered local secondary worktrees
+  and branches, obtains separate authorization for exact eligible actions, and
+  records restartable outcomes.
+
+Archive does not remove a branch or worktree. The manual cleanup contract,
+record location, validator, gates, and recovery paths are defined in
+[`docs/sdd-workflow.md`](docs/sdd-workflow.md#workspace-cleanup-after-lifecycle-delivery).
 
 Each phase has an entry condition and produces something durable. A phase is not
 complete because it was attempted — it is complete when its evidence exists.
