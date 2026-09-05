@@ -44,7 +44,7 @@ context: |
 
 rules:
   proposal:
-    - "State the problem, desired outcome, explicit scope, and non-goals."
+    - "Include these exactly named level-two headings: Why, What Changes, Non-Goals, Impact, and Reuse Plan. Preserve additional standard OpenSpec sections, including Capabilities. State the problem, desired outcome, and explicit scope within them."
     - "Reference the primary GitHub issue and identify affected users, compatibility, and migration impact when relevant."
     - "Define capabilities by durable behavior rather than milestone, component, or task group."
     - "State which values are derived from the environment and which are configuration; no product-specific constant belongs in a portable asset."
@@ -55,6 +55,7 @@ rules:
     - "State assistant-portability behavior for any capability an agent invokes."
     - "Do not invent a behavioral requirement solely to satisfy validation."
   design:
+    - "Use exactly these level-two headings: Context, Goals / Non-Goals, Decisions, Verification Strategy, Attribution and Licensing, Recovery, and Reuse Plan."
     - "Identify affected files, ownership boundaries, shared interfaces, credentials, environments, and external state."
     - "Document alternatives, tradeoffs, and why the selected approach is appropriate."
     - "Define a proportional test strategy with objective completion evidence."
@@ -63,8 +64,8 @@ rules:
     - "Record attribution and licensing impact plus rollback behavior for automation changes."
   tasks:
     - "Use stable numbered task IDs and small ordered verifiable slices."
-    - "Add Depends on annotations where order is not obvious."
-    - "Place tests beside the behavior they verify and state the evidence expected at completion."
+    - "Every task must include the literal metadata fields Depends on: and Evidence:."
+    - "Place tests beside the behavior they verify and state non-empty evidence expected at completion."
     - "Include validation, review, documentation, and security work explicitly."
 
 operations:

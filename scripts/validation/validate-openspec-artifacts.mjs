@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseTrackingYaml } from "./lib/tracking.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../..");
@@ -71,10 +72,41 @@ function validateProposal(changeDir, rules, issues) {
   }
 }
 
-function validateSpecs(changeDir, rules, issues) {
+function validateChangeMetadata(changeDir, issues) {
+  const filePath = path.join(changeDir, ".openspec.yaml");
+  if (!exists(filePath)) {
+    addIssue(issues, "change.metadata.exists", filePath, ".openspec.yaml metadata is required");
+    return { skipSpecs: false };
+  }
+
+  let metadata;
+  try {
+    metadata = parseTrackingYaml(readText(filePath));
+  } catch {
+    addIssue(issues, "change.metadata.parse", filePath, "invalid .openspec.yaml metadata; correct the file");
+    return { skipSpecs: false };
+  }
+
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    addIssue(issues, "change.metadata.shape", filePath, ".openspec.yaml metadata must be a mapping");
+    return { skipSpecs: false };
+  }
+
+  if (!("skip_specs" in metadata)) return { skipSpecs: false };
+  if (typeof metadata.skip_specs !== "boolean") {
+    addIssue(issues, "change.metadata.skip_specs", filePath, "skip_specs must be a boolean");
+    return { skipSpecs: false };
+  }
+
+  return { skipSpecs: metadata.skip_specs };
+}
+
+function validateSpecs(changeDir, rules, metadata, issues) {
   const specFiles = listSpecFiles(path.join(changeDir, "specs"));
   if (specFiles.length === 0) {
-    addIssue(issues, "spec.exists", path.join(changeDir, "specs"), "at least one delta spec is required");
+    if (!metadata.skipSpecs) {
+      addIssue(issues, "spec.exists", path.join(changeDir, "specs"), "at least one delta spec is required unless skip_specs is true");
+    }
     return;
   }
 
@@ -100,7 +132,7 @@ function validateSpecs(changeDir, rules, issues) {
       if (!rules.scenarioTerms.every((term) => new RegExp(`\\b${term}\\b`).test(body))) {
         addIssue(issues, "spec.scenario.when_then", filePath, `scenario lacks WHEN/THEN evidence: ${title}`);
       }
-      if (/^- \[[ x]\]|\b(add|edit|create|rename|delete)\s+`[^`]+`/i.test(body)) {
+      if (/^\s*-\s+\[[ x]\]/im.test(body)) {
         addIssue(issues, "spec.requirement.behavioral", filePath, `requirement reads like an implementation task: ${title}`);
       }
     }
@@ -157,7 +189,7 @@ function validateTasks(changeDir, rules, issues) {
         addIssue(issues, `tasks.metadata.${metadata.toLowerCase().replace(/[^a-z]+/g, "_")}`, filePath, `missing ${metadata} for ${taskLine}`);
       }
     }
-    if (taskLine.startsWith("- [x]") && !/Evidence:\s+\S/i.test(block)) {
+    if (taskLine.startsWith("- [x]") && !/^[ \t]*Evidence:[ \t]*\S/im.test(block)) {
       addIssue(issues, "tasks.completed.evidence", filePath, `completed task lacks evidence for ${taskLine}`);
     }
   }
@@ -176,7 +208,8 @@ export function validateChange(changeDir, ruleConfig = JSON.parse(readText(rules
   const issues = [];
 
   validateProposal(resolvedChangeDir, rules.proposal, issues);
-  validateSpecs(resolvedChangeDir, rules.spec, issues);
+  const metadata = validateChangeMetadata(resolvedChangeDir, issues);
+  validateSpecs(resolvedChangeDir, rules.spec, metadata, issues);
   validateDesign(resolvedChangeDir, rules.design, issues);
   validateTasks(resolvedChangeDir, rules.tasks, issues);
 
