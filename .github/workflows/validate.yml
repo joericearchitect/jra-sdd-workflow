@@ -17,6 +17,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install validation dependencies
+        run: npm ci
+
       - name: Validator unit tests
         run: node --test scripts/validation/test/*.test.mjs
 

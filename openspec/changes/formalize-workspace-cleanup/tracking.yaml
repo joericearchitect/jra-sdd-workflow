@@ -1,0 +1,29 @@
+schema_version: 1
+openspec:
+  change: formalize-workspace-cleanup
+github:
+  repository: joericearchitect/jra-sdd-workflow
+  issue: 5
+  issue_url: https://github.com/joericearchitect/jra-sdd-workflow/issues/5
+  project_owner: joericearchitect
+  project_number: 1
+implementation_repositories:
+  - repository: joericearchitect/jra-sdd-workflow
+    default_branch: main
+    paths:
+      - ai-planning/design-briefs/post-archive-workspace-cleanup.md
+      - .github/workflows/validate.yml
+      - package.json
+      - package-lock.json
+      - schemas/workspace-cleanup-v1.schema.json
+      - scripts/validation/lib/workspace-cleanup.mjs
+      - scripts/validation/validate-workspace-cleanup.mjs
+      - scripts/validation/test/workspace-cleanup.test.mjs
+      - README.md
+      - docs/sdd-workflow.md
+      - docs/design/glossary/02-lifecycle.md
+      - ai-planning/plans/change-runbook.md
+      - ai-planning/plans/change-runbook-ai.md
+      - ai-planning/plans/dogfood-10-changes.md
+      - ai-planning/plans/dogfood-observations.md
+      - ai-planning/notes/issue-and-friction-log.md

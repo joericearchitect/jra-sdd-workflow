@@ -119,7 +119,34 @@ candidate through human review. Confirm each gate's correction or recovery
 path. Stop on an unresolved product, architecture, security, governance, or
 scope decision.
 
-## 5. Apply
+## 5. Plan, create, inspect, and register implementation resources
+
+Resolve the shared Git metadata directory with `git rev-parse --git-common-dir`
+and use its relative `sdd/workspace-cleanup/v1/<change>/register.json` record.
+Before running any branch or worktree creation command, add separate `planned`
+entries for the implementation branch and, when used, its secondary worktree.
+Every key contains the selected change, role `implementation`, kind `branch` or
+`worktree`, and explicit attempt `1`. Record the discovered default-branch
+commit, intended full branch ref or portable worktree name, and a recovery
+reference. Never store the resolved absolute worktree path.
+
+Validate the register before creation:
+
+```bash
+node scripts/validation/validate-workspace-cleanup.mjs \
+  --change "<change>" "<shared-git-dir>/sdd/workspace-cleanup/v1/<change>/register.json"
+```
+
+Create each exact resource manually. Immediately inspect its Git kind,
+identity, starting commit, secondary-worktree status, administrative worktree
+identity, and associated branch. Promote only an exact match to `registered`
+and validate again. Retain a failed or mismatched entry as `cancelled` or
+`blocked`, record its exit, and plan the next attempt for that change, role,
+and kind. A replacement worktree can reference a still-registered branch from
+an earlier branch attempt; record that branch's complete key. The primary
+worktree and every unregistered resource remain outside cleanup ownership.
+
+## 6. Apply
 
 After explicit authorization for the named change:
 
@@ -133,14 +160,14 @@ dependency order, preserve unrelated work, and mark `[x]` only when the task's
 current `Evidence:` exists. A second repair to the same component triggers a
 design review instead of a third attempt.
 
-## 6. Verify
+## 7. Verify
 
 Invoke the selected Verify action. Review completeness, correctness, coherence,
 security, portability, recovery, attribution, and task evidence. Apply only
 authorized, behavior-preserving corrections and rerun affected checks after
 each correction. Finish by rerunning the complete gate from step 4.
 
-## 7. Implementation PR and merge
+## 8. Implementation PR and merge
 
 Commit only the named change and its implementation. The PR body must contain:
 
@@ -152,11 +179,12 @@ OpenSpec change: <change>
 
 Wait for review, linkage validation, and required CI. Merge only through an
 explicitly authorized action. Confirm the exact merged commit is on the default
-branch and the issue is closed. The issue and Project now represent delivered
-implementation; keep the separate campaign row `In progress` until the
-lifecycle-record PR merges.
+branch and the issue is closed. Add that PR number and delivered commit only to
+the registered `implementation` entries, then validate `register.json`. The
+issue and Project now represent delivered implementation; keep the separate
+campaign row `In progress` until the lifecycle-record PR merges.
 
-## 8. Sync and Archive
+## 9. Sync and Archive
 
 Start from the merged default-branch head. Invoke the selected Sync action for
 `<change>` and validate the resulting living specs. Then invoke Archive. The
@@ -167,7 +195,12 @@ Rerun the complete gate from step 4, substituting the archived change path for
 the active artifact path where necessary. Do not call Sync or Archive delivery;
 their repository mutations are not durable until the next step merges.
 
-## 9. Lifecycle-record PR
+## 10. Lifecycle-record resources and PR
+
+From the current default-branch commit after implementation delivery, repeat
+step 5 with new entries whose role is `lifecycle-record`. Do not reuse the
+implementation resource's ownership or delivery binding. Preserve and advance
+attempt history independently for its branch and worktree kinds.
 
 Commit only the synchronized living specs, archived change, and campaign ledger
 updates. The PR body must contain:
@@ -180,9 +213,35 @@ OpenSpec change: <change>
 
 The linkage validator can resolve the archived change by its date-prefixed
 directory. Merge after review and all required checks pass. Confirm the archive
-and living specs are present on the default branch.
+and living specs are present on the default branch. Add that PR number and
+delivered commit only to the registered `lifecycle-record` entries and validate
+the register again.
 
-## 10. Close the campaign entry
+## 11. Audit, authorize, and receipt Workspace cleanup
+
+After lifecycle delivery, follow
+[`docs/sdd-workflow.md`](../../docs/sdd-workflow.md#workspace-cleanup-after-lifecycle-delivery).
+Confirm both PRs and their delivered commits, the closed issue, archive and
+living spec on the default branch, and the configured Project completion state.
+If Project is not configured, explicitly record `not-applicable`. A failed or
+unavailable gate preserves every resource and returns to evidence collection.
+
+Validate the register, then freshly inspect and classify only its registered
+selected-change resources. Display exact eligible local actions and stop for
+separate human authorization. After authorization, re-inspect immediately
+before each manual action; drift expires authorization and returns to audit.
+Write a started `cleanup-run-v1` receipt before acting, update it after each
+action, and remove a secondary worktree before its associated local branch.
+Never target the primary worktree, a remote branch, a legacy or unregistered
+resource, or use force, reset, or a broad pattern.
+
+Validate the receipt against its register with `--project-configured` when the
+change has Project configuration, or `--no-project` when it does not. On
+interruption, resume from the receipt without replaying completed or absent
+actions and re-audit every unfinished resource. A zero-resource receipt is a
+valid safe outcome but not a qualifying automation-evidence run.
+
+## 12. Close the campaign entry
 
 Confirm the Project reflects implementation delivery and set the roadmap row to
 `Done`. Add a sanitized observation containing:
@@ -193,6 +252,10 @@ Confirm the Project reflects implementation delivery and set the roadmap row to
 - recovery attempts and outcome;
 - whether the same pain has appeared before; and
 - any skipped, unavailable, or unresolved evidence.
+
+Also record whether Workspace cleanup was a qualifying end-to-end manual run,
+its bounded friction codes, and sanitized material outcomes. Keep the exact
+machine-local register and receipt out of the campaign ledger.
 
 Never place credentials, raw authentication output, personal data, or unbounded
 logs in the observation record.
