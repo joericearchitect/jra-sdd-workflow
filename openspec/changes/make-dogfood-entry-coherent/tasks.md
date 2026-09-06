@@ -73,7 +73,7 @@
   Evidence: self-review findings and any first bounded correction are recorded;
   no credential, absolute path, external identifier default, executable issue
   text, or unapproved GitHub mutation is introduced.
-- [ ] 4.3 At Gate 3, pause with the current reviewed head and verification
+- [x] 4.3 At Gate 3, pause with the current reviewed head and verification
   evidence for a human decision. If the human selects independent review,
   obtain a fresh read-only review and, only if authorized, handle one in-scope
   objective-fix/test loop before requesting closure approval; otherwise record
