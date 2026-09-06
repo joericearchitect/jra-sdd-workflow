@@ -1,0 +1,23 @@
+schema_version: 1
+openspec:
+  change: make-dogfood-entry-coherent
+github:
+  repository: joericearchitect/jra-sdd-workflow
+  issue: 12
+  issue_url: https://github.com/joericearchitect/jra-sdd-workflow/issues/12
+  project_owner: joericearchitect
+  project_number: 1
+implementation_repositories:
+  - repository: joericearchitect/jra-sdd-workflow
+    default_branch: main
+    paths:
+      - .github/pull_request_template.md
+      - AGENTS.md
+      - CLAUDE.md
+      - README.md
+      - ai-planning/plans/dogfood-10-changes.md
+      - ai-planning/plans/dogfood-command-log.txt
+      - ai-planning/plans/dogfood-observations.md
+      - docs/sdd-workflow.md
+      - openspec/config.yaml
+      - scripts/validation/test/pr-contract.test.mjs

@@ -42,6 +42,14 @@ context: |
   later explicit request. Report unknown, blocked, or unevidenced states
   honestly and preserve unrelated user-authored work.
 
+  Living specifications: Create or update a living OpenSpec specification only
+  when a change adds, removes, or changes a durable, observable capability that
+  future work must rely on. Documentation, templates, tests, planning records,
+  campaign evidence, and internal implementation details do not create a living
+  specification by themselves. When classification is unclear, resolve it
+  explicitly in Explore; do not manufacture a specification merely to satisfy a
+  process check.
+
 rules:
   proposal:
     - "Include these exactly named level-two headings: Why, What Changes, Non-Goals, Impact, and Reuse Plan. Preserve additional standard OpenSpec sections, including Capabilities. State the problem, desired outcome, and explicit scope within them."

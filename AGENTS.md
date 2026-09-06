@@ -28,6 +28,7 @@ This repository defines a spec-driven development workflow built on OpenSpec.
 ```bash
 node --test scripts/validation/test/*.test.mjs
 node scripts/validation/validate-no-hardcoded-environment.mjs
+node scripts/validation/validate-tracking.mjs openspec/changes/<change-name>/tracking.yaml
 node scripts/validation/validate-openspec-artifacts.mjs openspec/changes/<change-name>
 openspec validate --all --strict
 ```

@@ -27,9 +27,47 @@ Issue
   -> workspace cleanup
 ```
 
-Proposal and apply are separate authorization boundaries. A proposal creates
-planning artifacts only. Implementation begins only after an explicit apply
-request for a named change.
+## Living Specifications
+
+Create or update a living OpenSpec specification only when a change adds,
+removes, or changes a durable, observable capability that future work must rely
+on. Documentation, templates, tests, planning records, campaign evidence, and
+internal implementation details do not create a living specification by
+themselves. When classification is unclear, resolve it explicitly in Explore;
+do not manufacture a specification merely to satisfy a process check.
+
+A documentation-only change declares `skip_specs: true` in its generated
+`.openspec.yaml` and creates no delta spec. If Explore identifies a genuine
+durable capability, stop that documentation-only scope and propose the
+capability as separate work.
+
+## Human Review Gates
+
+This manual workflow has three sustained human gates. They reduce unnecessary
+authorization pauses; they do not authorize a controller, automatic campaign
+transition, or unbounded retry.
+
+| Gate | Entry evidence | Human decision and coverage |
+|---|---|---|
+| Explore to Propose | The named change has practical answers for open questions, scope, non-goals, evidence, recovery, and external-state hazards. | Approve planning artifact creation: proposal, design, tasks, a justified delta spec, and tracking metadata. |
+| Planning to Apply | Planning artifacts, planning validation, and review are complete. | Approve Apply for the named change, including routine registered branch/worktree creation, implementation, verification, self-review, and a first bounded objective correction. |
+| Verification to closure | Task evidence, focused and complete checks, self-review, and the current reviewed head are available. | Review verification, initiate a fresh read-only independent review, permit its bounded objective-fix/test loop, then approve closure for the named change. Closure covers exact-head delivery, issue/Project reconciliation, justified Sync, Archive, lifecycle-record delivery, fresh cleanup audit and exact cleanup, and verified remote-branch retirement. |
+
+Gate 3 is one sustained review gate, not a sequence of routine pauses. An
+independent reviewer is fresh and read-only. An in-scope objective finding may
+receive one bounded correction with affected and complete revalidation, followed
+by a fresh independent review; a second repair to the same component returns to
+design review.
+
+Authorization expires and work returns to review when scope, reviewed head, CI
+result, delivery target, resource identity or ownership, Project/issue evidence,
+or independent-review conclusion drifts. It also returns to review for a
+material design, security, compatibility, or external-state decision;
+unavailable permissions; or a failed recovery path. Closure actions inspect
+their exact registered targets immediately before use: never include the
+primary worktree, force options, broad patterns, legacy resources, or unknown
+resources. A remote branch is eligible only when its exact head is proved merged
+into the current default branch.
 
 ## Prerequisites
 
