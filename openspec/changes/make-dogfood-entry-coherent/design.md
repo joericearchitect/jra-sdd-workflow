@@ -47,9 +47,10 @@ configuration rather than copying them into reusable guidance.
 2. **Three gates are policy prose, not executable state.** The workflow guide
    will define entry evidence, the human decision, authorized work after each
    approval, expiration conditions, and return-to-review exceptions. Gate 3
-   includes the fresh read-only independent review and one bounded
-   objective-fix/test loop; it does not add routine pauses between delivery,
-   Sync, Archive, lifecycle record, and exact cleanup. A controller or
+   pauses for human verification review; the human may select a fresh read-only
+   independent review and one bounded objective-fix/test loop, or authorize
+   closure without that optional review. It does not add routine pauses between
+   delivery, Sync, Archive, lifecycle record, and exact cleanup. A controller or
    automatic status transition is rejected because it would violate the
    manual-first campaign.
 
@@ -100,9 +101,11 @@ configuration rather than copying them into reusable guidance.
 - Re-run the manual path inventory and line-count command from the reviewed
   exact inventories; report generated copies separately and assess the
   supporting/product threshold.
-- Before delivery, obtain a fresh read-only independent review of the current
-  head. Any in-scope objective finding gets one bounded fix and affected/full
-  revalidation, followed by a fresh independent review.
+- Before delivery, pause at Gate 3 for human verification review of the current
+  head. If the human selects an independent review, obtain a fresh read-only
+  review; any in-scope objective finding gets one bounded fix and affected/full
+  revalidation, followed by a fresh independent review. Otherwise, record the
+  human's direct closure authorization for the exact head.
 
 ## Attribution and Licensing
 
@@ -121,11 +124,13 @@ generated integration refresh. No licensing or attribution change is expected.
   planning validation, scope, external state, or resource identity drifts,
   correct from fresh evidence and return to planning review.
 - **Gate 3 — Verification to closure:** entry requires task evidence, focused
-  and complete checks, self-review, the current reviewed head, and a fresh
-  read-only independent review. The human authorizes the selected change’s
-  bounded closure. If the reviewed head, CI, target, resource ownership,
-  Project/issue evidence, or review conclusion drifts—or a material design,
-  security, compatibility, external-state, permission, recovery, or second
+  and complete checks, self-review, and the current reviewed head. The human
+  pauses to review verification, then either selects a fresh read-only
+  independent review or authorizes the selected change's bounded closure
+  directly. If selected, that review's conclusion is part of the evidence. If
+  the reviewed head, CI, target, resource ownership, Project/issue evidence,
+  or a selected review conclusion drifts—or a material design, security,
+  compatibility, external-state, permission, recovery, or second
   same-component repair issue arises—preserve state and return to review.
 
 PF3 itself is recovered by a scoped revert of its documentation/template/test

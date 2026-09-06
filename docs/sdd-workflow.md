@@ -51,17 +51,18 @@ transition, or unbounded retry.
 |---|---|---|
 | Explore to Propose | The named change has practical answers for open questions, scope, non-goals, evidence, recovery, and external-state hazards. | Approve planning artifact creation: proposal, design, tasks, a justified delta spec, and tracking metadata. |
 | Planning to Apply | Planning artifacts, planning validation, and review are complete. | Approve Apply for the named change, including routine registered branch/worktree creation, implementation, verification, self-review, and a first bounded objective correction. |
-| Verification to closure | Task evidence, focused and complete checks, self-review, and the current reviewed head are available. | Review verification, initiate a fresh read-only independent review, permit its bounded objective-fix/test loop, then approve closure for the named change. Closure covers exact-head delivery, issue/Project reconciliation, justified Sync, Archive, lifecycle-record delivery, fresh cleanup audit and exact cleanup, and verified remote-branch retirement. |
+| Verification to closure | Task evidence, focused and complete checks, self-review, and the current reviewed head are available. | Pause for human verification review. The human may request a fresh read-only independent review and its bounded objective-fix/test loop, or approve closure directly for the named change. Closure covers exact-head delivery, issue/Project reconciliation, justified Sync, Archive, lifecycle-record delivery, fresh cleanup audit and exact cleanup, and verified remote-branch retirement. |
 
 Gate 3 is one sustained review gate, not a sequence of routine pauses. An
-independent reviewer is fresh and read-only. An in-scope objective finding may
-receive one bounded correction with affected and complete revalidation, followed
-by a fresh independent review; a second repair to the same component returns to
-design review.
+independent review is optional and starts only when the human selects it; when
+selected, its reviewer is fresh and read-only. An in-scope objective finding
+from that review may receive one bounded correction with affected and complete
+revalidation, followed by a fresh independent review; a second repair to the
+same component returns to design review.
 
 Authorization expires and work returns to review when scope, reviewed head, CI
 result, delivery target, resource identity or ownership, Project/issue evidence,
-or independent-review conclusion drifts. It also returns to review for a
+or a selected independent-review conclusion drifts. It also returns to review for a
 material design, security, compatibility, or external-state decision;
 unavailable permissions; or a failed recovery path. Closure actions inspect
 their exact registered targets immediately before use: never include the

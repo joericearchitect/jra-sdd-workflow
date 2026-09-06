@@ -73,11 +73,14 @@
   Evidence: self-review findings and any first bounded correction are recorded;
   no credential, absolute path, external identifier default, executable issue
   text, or unapproved GitHub mutation is introduced.
-- [ ] 4.3 At Gate 3, obtain a fresh read-only independent review of the current
-  head and, only if authorized, handle one in-scope objective-fix/test loop
-  before requesting closure approval.
+- [ ] 4.3 At Gate 3, pause with the current reviewed head and verification
+  evidence for a human decision. If the human selects independent review,
+  obtain a fresh read-only review and, only if authorized, handle one in-scope
+  objective-fix/test loop before requesting closure approval; otherwise record
+  direct closure authorization for the exact head.
   Depends on: 4.2.
-  Evidence: independent-review conclusion identifies the reviewed head and
-  evidence; any objective correction has affected and complete revalidation
-  plus a fresh review, while a second same-component repair returns to design
-  review.
+  Evidence: human Gate 3 decision identifies the reviewed head and verification
+  evidence. When independent review is selected, its conclusion identifies the
+  same head and evidence; any objective correction has affected and complete
+  revalidation plus a fresh review, while a second same-component repair returns
+  to design review.
