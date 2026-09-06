@@ -39,17 +39,8 @@
 - [ ] 2.3 At Gate 3, pause with the current reviewed head and verification
   evidence for a human decision. If the human selects independent review,
   obtain a fresh read-only review and handle its bounded objective-fix/test
-  loop; otherwise record direct closure authorization for the exact head.
+  loop; otherwise record direct closure authorization for the exact head before
+  delivery.
   Depends on: 2.2.
   Evidence: human Gate 3 decision identifies the reviewed head and verification
   evidence; a selected independent-review conclusion binds that same head.
-
-## 3. Deliver the approved record correction
-
-- [ ] 3.1 Deliver the approved correction through the normal issue-linked
-  implementation and lifecycle-record pull-request sequence; preserve the
-  archived PF3 resources and create no candidate 1 GitHub-state mutation.
-  Depends on: 2.3.
-  Evidence: both pull requests contain the required linkage, pass validation,
-  and record the merged commits; the original PF3 cleanup register remains
-  unchanged except for its later authorized cleanup receipt.
