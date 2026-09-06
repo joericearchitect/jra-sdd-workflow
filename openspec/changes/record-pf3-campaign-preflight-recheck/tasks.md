@@ -1,12 +1,12 @@
 ## 1. Recheck and reconcile campaign records
 
-- [ ] 1.1 Recheck every campaign-entry gate from the preflight disposition
+- [x] 1.1 Recheck every campaign-entry gate from the preflight disposition
   against durable PF1–PF3 issue, PR, archive, observation, validation, and
   current-default-branch evidence; preserve `Blocked` if any input fails.
   Depends on: Proposal and design decisions 1, 2, and 4.
   Evidence: a sanitized observation identifies each gate input, its source,
   pass/fail result, the reviewed default-branch commit, and any recovery path.
-- [ ] 1.2 Update the campaign roadmap only after task 1.1 passes: record PF3
+- [x] 1.2 Update the campaign roadmap only after task 1.1 passes: record PF3
   implementation/lifecycle/archive evidence and change candidate 1 from
   `Blocked` to `Not started`; retain `In progress` exclusively for its actual
   Explore and leave candidate 1's GitHub issue and Project state unchanged.
@@ -14,7 +14,7 @@
   Evidence: roadmap review shows completed PF3 evidence, no stale active-PF3
   claim, the exact permitted candidate-state transition, and no GitHub-state
   instruction or mutation.
-- [ ] 1.3 Add the recheck and omitted-ledger-update recovery lesson to the
+- [x] 1.3 Add the recheck and omitted-ledger-update recovery lesson to the
   sanitized observation ledger without copying credentials, transient output,
   or unreviewed model text.
   Depends on: 1.1 and 1.2.
@@ -24,13 +24,13 @@
 
 ## 2. Verify the documentation-only correction
 
-- [ ] 2.1 Run focused and complete validation: Node tests, portability,
+- [x] 2.1 Run focused and complete validation: Node tests, portability,
   selected-change tracking and artifact validators, strict OpenSpec validation,
   and `git diff --check`; confirm `skip_specs: true` has no delta specs.
   Depends on: 1.2 and 1.3.
   Evidence: each command exits successfully and validation output names no
   changed living specification or failed gate.
-- [ ] 2.2 Self-review the recheck evidence, campaign-state semantics, external
+- [x] 2.2 Self-review the recheck evidence, campaign-state semantics, external
   state boundary, and recovery wording before Gate 3; apply at most one
   evidence-backed objective correction to this campaign-record component.
   Depends on: 2.1.

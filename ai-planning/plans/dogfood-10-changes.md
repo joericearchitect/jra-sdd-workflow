@@ -47,17 +47,17 @@ does not qualify.
 
 - GitHub issue [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1)
   exists for candidate 1 and is on the configured Project in its initial state.
-- PF1 and PF2 are delivered and archived; their issue, pull-request, archive,
-  and observation evidence is recorded below. PF3 has issue #12 and remains
-  the active preflight repair until its normal lifecycle evidence is durable.
-- Candidate 1 remains blocked by the uncompleted PF3 preflight repair in
+- PF1, PF2, and PF3 are delivered and archived. Their issue, pull-request,
+  archive, observation, default-branch, and validation evidence was rechecked
+  in OBS-007 before this roadmap transition.
+- Candidate 1 is `Not started` after the passing preflight recheck in
   [review disposition `DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
-  Raw model review output remains temporary scratch; this disposition is the
-  durable source for the accepted findings and repair scope.
+  Raw model review output remains temporary scratch; this disposition and the
+  recorded recheck are the durable sources for accepted findings and readiness.
 - At planning baseline, the repository had 9 passing Node tests; the hardcoded-environment validator
   passes; `openspec validate --all --strict` reports no items to validate.
-- The planning files are durable; PF3 can begin only after its separate
-  preflight intake and Explore work.
+- The planning files are durable. Candidate 1 may enter Explore only after its
+  own explicit authorization; it becomes `In progress` when that Explore starts.
 
 Status values are alternatives, not a mandatory sequence:
 `Not started` | `In progress` | `Blocked` | `Done`.
@@ -69,7 +69,7 @@ exist.
 
 | # | Proposed OpenSpec change | Issue | Outcome | Hard dependencies | Status |
 |---|---|---|---|---|---|
-| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Blocked |
+| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Not started |
 | 2 | `docs-definition-of-done` | TBD | Contributors can identify entry, exit, evidence, and recovery expectations for every lifecycle phase | None | Not started |
 | 3 | `docs-pr-linkage-contract` | TBD | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | Not started |
 | 4 | `align-issue-template-labels` | TBD | Issue-form labels and live repository labels agree, with a documented recovery path | None | Not started |
@@ -231,10 +231,11 @@ Complete once before candidate 1:
    serial, independently reviewed changes. Record their final issue, OpenSpec,
    PR, archive, and observation evidence here; the proposed names are not
    records until intake creates them.
-3. After PF3 lifecycle-record delivery, recheck every item in the disposition's
-   campaign entry gate. Only then change candidate 1 from `Blocked` to `Not
-   started`; mark it `In progress` only when its Explore actually begins. A
-   failed or unavailable gate preserves `Blocked` with its recovery path.
+3. PF3 lifecycle-record delivery is durable. OBS-007 rechecked every item in
+   the disposition's campaign entry gate; all inputs passed, so candidate 1
+   changed from `Blocked` to `Not started`. Mark it `In progress` only when its
+   Explore actually begins. A later failed or unavailable recheck returns it to
+   `Blocked` with its recovery path.
 4. Record tool versions, workflow selection, active changes, current tests,
    validators, and strict OpenSpec output in the observation log.
 5. Verify GitHub authentication and discover the current repository, default
@@ -259,7 +260,7 @@ Complete once before candidate 1:
 |---|---|---|---|---|
 | PF1 `align-tracking-contract` | [#2](https://github.com/joericearchitect/jra-sdd-workflow/issues/2) | [PR #3](https://github.com/joericearchitect/jra-sdd-workflow/pull/3) | [PR #4](https://github.com/joericearchitect/jra-sdd-workflow/pull/4) | [Archived change](../../openspec/changes/archive/2026-09-04-align-tracking-contract/). Its resources predate the cleanup contract and remain legacy rather than qualifying cleanup evidence. |
 | PF2 `align-artifact-quality-gates` | [#8](https://github.com/joericearchitect/jra-sdd-workflow/issues/8) | [PR #9](https://github.com/joericearchitect/jra-sdd-workflow/pull/9) | [PR #10](https://github.com/joericearchitect/jra-sdd-workflow/pull/10) | [Archived change](../../openspec/changes/archive/2026-09-05-align-artifact-quality-gates/); OBS-005 records the first qualifying manual cleanup run. |
-| PF3 `make-dogfood-entry-coherent` | [#12](https://github.com/joericearchitect/jra-sdd-workflow/issues/12) | Not started | Not started | Active documentation-only preflight repair; candidate 1 remains Blocked until PF3 lifecycle-record delivery rechecks the campaign entry gate. |
+| PF3 `make-dogfood-entry-coherent` | [#12](https://github.com/joericearchitect/jra-sdd-workflow/issues/12) | [PR #13](https://github.com/joericearchitect/jra-sdd-workflow/pull/13) | [PR #14](https://github.com/joericearchitect/jra-sdd-workflow/pull/14) | [Archived change](../../openspec/changes/archive/2026-09-05-make-dogfood-entry-coherent/); OBS-006 records proportion measurement and OBS-007 records the completed campaign-entry recheck. |
 
 ## Per-change loop
 
