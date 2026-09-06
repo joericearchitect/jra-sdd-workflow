@@ -18,11 +18,9 @@ does not qualify.
 
 - Work is serial: only one campaign change is active at a time.
 - Proposal and Apply remain separate authorization boundaries.
-- Every candidate uses the `prototype-rapid` delivery profile because it
-  changes repository documentation, configuration, tests, or GitHub metadata;
-  it handles no production data and can be recovered by a scoped revert or
-  metadata reversal. The profile does not authorize GitHub mutations, Apply,
-  merge, Sync, or Archive.
+- Each candidate states its own scope, non-goals, acceptance evidence, local
+  risk, recovery, and external-state assumptions. Those statements do not
+  authorize GitHub mutations, Apply, merge, Sync, or Archive.
 - GitHub issue, Project, pull-request, merge, label, and archive actions remain
   interactive and require their normal just-in-time authorization.
 - The implementation PR must merge and close its issue before Archive, as
@@ -50,7 +48,8 @@ does not qualify.
 - GitHub issue [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1)
   exists for candidate 1 and is on the configured Project in its initial state.
 - PF1 and PF2 are delivered and archived; their issue, pull-request, archive,
-  and observation evidence is recorded below. PF3 remains pending.
+  and observation evidence is recorded below. PF3 has issue #12 and remains
+  the active preflight repair until its normal lifecycle evidence is durable.
 - Candidate 1 remains blocked by the uncompleted PF3 preflight repair in
   [review disposition `DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
   Raw model review output remains temporary scratch; this disposition is the
@@ -76,9 +75,9 @@ exist.
 | 4 | `align-issue-template-labels` | TBD | Issue-form labels and live repository labels agree, with a documented recovery path | None | Not started |
 | 5 | `add-docs-issue-template` | TBD | Documentation work has an intake form using verified labels and the existing SDD fields | 4 | Not started |
 | 6 | `remove-unused-sample-fixture-config` | TBD | Artifact rules contain no dangling fixture setting that no validator consumes | None | Not started |
-| 7 | `add-artifact-validator-negative-tests` | TBD | Tests prove task validation rejects missing dependency metadata, missing evidence metadata, and completed tasks with empty evidence | None | Not started |
+| 7 | `resolve-pr-validation-signal` | TBD | The unused PR-validation signal is removed unless Explore identifies a concrete consumer with distinct necessary behavior | None | Not started |
 | 8 | `add-tracking-schema-examples` | TBD | A checked positive example passes tracking validation and a checked negative example fails for the documented reason | 1 | Not started |
-| 9 | `add-contributing` | TBD | Contributors have a concise artifact-anatomy and lifecycle entry guide linked to authoritative sources | 1–3 | Not started |
+| 9 | `reject-ambiguous-archive-lookup` | TBD | Archive lookup accepts exactly one canonical change match and rejects zero or ambiguous suffix matches with correction guidance | None | Not started |
 | 10 | `docs-dogfood-findings` | TBD | The campaign's observed friction, recoveries, non-events, and automation conclusions are recorded without fabricating a recovery | 1–9 | Not started |
 
 The numbered order is the campaign sequence. It is not a dependency claim;
@@ -133,15 +132,18 @@ not receive an invented delta requirement merely to satisfy artifact validation.
 
 ### 4. `align-issue-template-labels`
 
-- Scope: reconcile every label named by `.github/ISSUE_TEMPLATE/*.yml` with the
-  live repository labels and document the chosen configuration-owned mapping.
-- Non-goals: introduce organization-wide label policy or reusable label
-  automation.
-- Acceptance: every template label appears in a fresh live-label inventory,
-  template configuration names no absent label, and reversal steps are recorded
-  before mutation.
+- Scope: Explore selects a new dedicated temporary label that is not referenced
+  by an issue template, issue, workflow, or policy, then records its intended
+  properties, fresh pre-mutation inventory, creation evidence, deletion
+  evidence, and post-mutation inventory before later exact authorization.
+- Non-goals: use an intended final template label as rehearsal target,
+  introduce organization-wide label policy, or add reusable label automation.
+- Acceptance: the dedicated label is safely created and removed with the
+  recorded evidence, or its absence is recorded and a different safe externally
+  reversible rehearsal is approved before candidate 1 begins.
 - Hazard/recovery: this changes external GitHub metadata; inspect current labels
-  immediately before mutation and restore the prior set on rollback.
+  immediately before mutation and restore the prior set on rollback. Never
+  mutate a real label speculatively just to satisfy the exercise.
 
 ### 5. `add-docs-issue-template`
 
@@ -164,41 +166,45 @@ not receive an invented delta requirement merely to satisfy artifact validation.
 - Hazard/recovery: an unknown consumer would make removal incompatible; Explore
   must find consumers first, and any discovery pauses Propose for redesign.
 
-### 7. `add-artifact-validator-negative-tests`
+### 7. `resolve-pr-validation-signal`
 
-- Scope: add focused tests for `validateTasks` behavior in
-  `scripts/validation/validate-openspec-artifacts.mjs`.
-- Non-goals: change validator behavior, test tracking parsing, or build a broad
-  fixture framework.
-- Acceptance: deterministic tests reject a task without `Depends on:`, a task
-  without `Evidence:`, and a completed task whose evidence is empty; a minimal
-  valid task plan still passes.
-- Hazard/recovery: tests may encode implementation details; assert stable rule
-  IDs and externally visible validation results, then revert the tests if the
-  contract is shown to be wrong.
+- Scope: inspect the calculated `requiresOpenSpecValidation` return field from
+  the PR/linkage validators and remove it with its direct tests unless Explore
+  identifies a concrete consumer with distinct necessary behavior.
+- Non-goals: add a second CI policy, hidden validation gate, or unrelated PR
+  workflow behavior.
+- Acceptance: repository search finds no consumer and the dead field/tests are
+  removed, or Explore records the concrete consumer and pauses for a scoped
+  design decision.
+- Hazard/recovery: removing a hidden consumer would be incompatible; search
+  current sources before changing code and revert the focused removal if a
+  consumer is discovered.
 
 ### 8. `add-tracking-schema-examples`
 
-- Scope: add one positive and one negative tracking example in a clearly named
-  example/fixture location and test them through the repository validator.
+- Scope: add one positive tracking example with two valid, distinguishable
+  implementation-repository entries and one negative example with a duplicate
+  tracking key; test both through the repository validator.
 - Non-goals: replace the JSON schema, introduce a second YAML parser, or treat an
   example as configuration.
 - Acceptance: the positive example validates; the negative example fails with
-  the intended stable issue path/rule; examples contain placeholders rather
-  than environment-specific values.
+  the stable bounded duplicate-key rejection; examples contain placeholders
+  rather than environment-specific values.
 - Hazard/recovery: examples can become stale or leak local identifiers; run the
   portability validator and remove/revise only the examples and their tests.
 
-### 9. `add-contributing`
+### 9. `reject-ambiguous-archive-lookup`
 
-- Scope: add `CONTRIBUTING.md` describing issue intake, per-change artifact
-  anatomy, authorization boundaries, validation, and links to authoritative
-  workflow documentation.
-- Non-goals: duplicate the full workflow guide or define new governance.
-- Acceptance: a contributor can locate every required artifact and command from
-  the guide, and link/duplication review finds no conflicting lifecycle rules.
-- Hazard/recovery: duplicated prose can drift; prefer links and recover with a
-  scoped documentation correction or revert.
+- Scope: make archived-change lookup select an archive only when one exact
+  canonical match exists; reject zero and more than one suffix match with clear
+  correction guidance.
+- Non-goals: redesign active-change lookup, add broad archive indexing, or
+  change unrelated linkage policy.
+- Acceptance: direct tests cover exact-match success, zero-match failure, and
+  ambiguous suffix-match failure.
+- Hazard/recovery: archive naming can be ambiguous; preserve existing valid
+  exact lookup behavior and revert the focused validator/test change if it
+  rejects a proven canonical archive.
 
 ### 10. `docs-dogfood-findings`
 
@@ -225,9 +231,10 @@ Complete once before candidate 1:
    serial, independently reviewed changes. Record their final issue, OpenSpec,
    PR, archive, and observation evidence here; the proposed names are not
    records until intake creates them.
-3. Confirm every item in the disposition's campaign entry gate. Only then
-   change candidate 1 from `Blocked` to `Not started`; mark it `In progress`
-   when its Explore actually begins.
+3. After PF3 lifecycle-record delivery, recheck every item in the disposition's
+   campaign entry gate. Only then change candidate 1 from `Blocked` to `Not
+   started`; mark it `In progress` only when its Explore actually begins. A
+   failed or unavailable gate preserves `Blocked` with its recovery path.
 4. Record tool versions, workflow selection, active changes, current tests,
    validators, and strict OpenSpec output in the observation log.
 5. Verify GitHub authentication and discover the current repository, default
@@ -235,13 +242,16 @@ Complete once before candidate 1:
    mutate them during discovery.
 6. Confirm issue #1 is the intake record for candidate 1 and do not create a
    duplicate.
-7. Record the current product/support proportions. For this campaign, workflow
-   docs/config, validators, schemas/rules, templates/workflows, living specs,
-   and generated assistant entry points are product surfaces. New helpers,
-   harnesses, fixtures, or orchestration used only to support those surfaces
-   are supporting machinery. Report generated entry-point size separately so
-   the classification remains visible. Stop for review if cumulative supporting
-   machinery approaches three times the product it supports.
+7. Record the current product/support proportions manually and reproducibly.
+   The authored-product denominator is the unique checked inventory of workflow
+   docs/configuration, validator and parser sources, schemas/rules,
+   templates/workflows, and living specs. The supporting numerator is any new
+   helper, harness, fixture, or orchestration that exists only for those
+   surfaces. Generated assistant entries are a separate generated-copy count;
+   exclude their duplicated lines from the authored-product denominator. Record
+   the exact path inventories, `git ls-files`/`sort -u`/`wc -l` command, result,
+   and three-times review conclusion in the observation ledger. Do not add a
+   counter or controller.
 
 ## Preflight delivery evidence
 
@@ -249,7 +259,7 @@ Complete once before candidate 1:
 |---|---|---|---|---|
 | PF1 `align-tracking-contract` | [#2](https://github.com/joericearchitect/jra-sdd-workflow/issues/2) | [PR #3](https://github.com/joericearchitect/jra-sdd-workflow/pull/3) | [PR #4](https://github.com/joericearchitect/jra-sdd-workflow/pull/4) | [Archived change](../../openspec/changes/archive/2026-09-04-align-tracking-contract/). Its resources predate the cleanup contract and remain legacy rather than qualifying cleanup evidence. |
 | PF2 `align-artifact-quality-gates` | [#8](https://github.com/joericearchitect/jra-sdd-workflow/issues/8) | [PR #9](https://github.com/joericearchitect/jra-sdd-workflow/pull/9) | [PR #10](https://github.com/joericearchitect/jra-sdd-workflow/pull/10) | [Archived change](../../openspec/changes/archive/2026-09-05-align-artifact-quality-gates/); OBS-005 records the first qualifying manual cleanup run. |
-| PF3 `make-dogfood-entry-coherent` | Not created | Not started | Not started | The remaining preflight blocker; begin only after separate intake and Explore. |
+| PF3 `make-dogfood-entry-coherent` | [#12](https://github.com/joericearchitect/jra-sdd-workflow/issues/12) | Not started | Not started | Active documentation-only preflight repair; candidate 1 remains Blocked until PF3 lifecycle-record delivery rechecks the campaign entry gate. |
 
 ## Per-change loop
 

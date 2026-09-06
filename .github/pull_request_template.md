@@ -4,8 +4,9 @@
 
 ## SDD Linkage
 
-- Issue:
-- OpenSpec change:
+- Issue reference: `Closes #<issue-number>`
+  (for a lifecycle-record PR, replace `Closes` with `Related to`).
+- OpenSpec change: `<change-name>`
 - Delivery mode: pull request
 
 ## Verification

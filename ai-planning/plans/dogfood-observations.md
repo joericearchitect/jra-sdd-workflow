@@ -155,6 +155,112 @@ review; it does not approve implementation.
 - Automation conclusion: none. One qualifying run is below the ten-run and
   repeated-friction thresholds, and no authorization or recovery gate changes.
 
+### OBS-006 — PF3 product/support proportion measurement
+
+- Candidate/change: campaign preflight / PF3 `make-dogfood-entry-coherent`.
+- Phase: Apply, before implementation delivery.
+- Expected behavior: proportion is measured manually from a checked path
+  inventory; generated assistant copies are visible but excluded from the
+  authored-product denominator.
+- Observed behavior: the reviewed inventory contains 4,213 authored-product
+  lines across 31 paths, 31 new supporting-test lines, and 7,379 generated-copy
+  lines across 37 paths. Supporting machinery is well below the three-times
+  review threshold.
+- Counting commands:
+
+  ```bash
+  git ls-files README.md AGENTS.md 'docs/**' 'openspec/config.yaml' 'openspec/specs/**' 'scripts/validation/*.mjs' 'scripts/validation/lib/**' 'schemas/**' 'quality/**' '.github/**' ':(exclude)scripts/validation/test/**' | sort -u | xargs wc -l
+  git ls-files '.agents/**' '.claude/**' '.continue/**' '.cline/**' | sort -u | xargs wc -l
+  wc -l scripts/validation/test/pr-contract.test.mjs
+  ```
+
+- Authored-product inventory:
+
+  ```text
+  .github/ISSUE_TEMPLATE/bug.yml
+  .github/ISSUE_TEMPLATE/config.yml
+  .github/ISSUE_TEMPLATE/feature.yml
+  .github/pull_request_template.md
+  .github/workflows/openspec-linkage.yml
+  .github/workflows/validate.yml
+  AGENTS.md
+  README.md
+  docs/design/glossary/01-foundations.md
+  docs/design/glossary/02-lifecycle.md
+  docs/design/glossary/03-change-and-artifacts.md
+  docs/design/glossary/04-github-and-delivery.md
+  docs/design/glossary/05-validation-and-recovery.md
+  docs/design/glossary/06-industry-terms.md
+  docs/design/glossary/README.md
+  docs/sdd-workflow.md
+  openspec/config.yaml
+  openspec/specs/artifact-quality-validation/spec.md
+  openspec/specs/tracking-contract/spec.md
+  openspec/specs/workspace-cleanup/spec.md
+  quality/openspec-artifact-rules.json
+  schemas/openspec-tracking-v1.schema.json
+  schemas/workspace-cleanup-v1.schema.json
+  scripts/validation/lib/tracking.mjs
+  scripts/validation/lib/workspace-cleanup.mjs
+  scripts/validation/validate-no-hardcoded-environment.mjs
+  scripts/validation/validate-openspec-artifacts.mjs
+  scripts/validation/validate-openspec-linkage.mjs
+  scripts/validation/validate-pr-contract.mjs
+  scripts/validation/validate-tracking.mjs
+  scripts/validation/validate-workspace-cleanup.mjs
+  ```
+
+- Generated-copy inventory:
+
+  ```text
+  .agents/skills/.openspec-target
+  .agents/skills/openspec-apply-change/SKILL.md
+  .agents/skills/openspec-archive-change/SKILL.md
+  .agents/skills/openspec-explore/SKILL.md
+  .agents/skills/openspec-propose/SKILL.md
+  .agents/skills/openspec-sync-specs/SKILL.md
+  .agents/skills/openspec-verify-change/SKILL.md
+  .claude/commands/opsx/apply.md
+  .claude/commands/opsx/archive.md
+  .claude/commands/opsx/explore.md
+  .claude/commands/opsx/propose.md
+  .claude/commands/opsx/sync.md
+  .claude/commands/opsx/verify.md
+  .claude/skills/openspec-apply-change/SKILL.md
+  .claude/skills/openspec-archive-change/SKILL.md
+  .claude/skills/openspec-explore/SKILL.md
+  .claude/skills/openspec-propose/SKILL.md
+  .claude/skills/openspec-sync-specs/SKILL.md
+  .claude/skills/openspec-verify-change/SKILL.md
+  .cline/skills/openspec-apply-change/SKILL.md
+  .cline/skills/openspec-archive-change/SKILL.md
+  .cline/skills/openspec-explore/SKILL.md
+  .cline/skills/openspec-propose/SKILL.md
+  .cline/skills/openspec-sync-specs/SKILL.md
+  .cline/skills/openspec-verify-change/SKILL.md
+  .continue/prompts/opsx-apply.prompt
+  .continue/prompts/opsx-archive.prompt
+  .continue/prompts/opsx-explore.prompt
+  .continue/prompts/opsx-propose.prompt
+  .continue/prompts/opsx-sync.prompt
+  .continue/prompts/opsx-verify.prompt
+  .continue/skills/openspec-apply-change/SKILL.md
+  .continue/skills/openspec-archive-change/SKILL.md
+  .continue/skills/openspec-explore/SKILL.md
+  .continue/skills/openspec-propose/SKILL.md
+  .continue/skills/openspec-sync-specs/SKILL.md
+  .continue/skills/openspec-verify-change/SKILL.md
+  ```
+
+- Supporting inventory: `scripts/validation/test/pr-contract.test.mjs` (31
+  lines). New PF3 planning artifacts and campaign records are not counted as
+  product or supporting machinery.
+- Exit/recovery: retain the checked inventories and rerun the commands after a
+  material path change. Stop for review if supporting machinery approaches
+  three times the authored product it supports.
+- Automation conclusion: none. The measurement is a manual campaign
+  checkpoint, not authorization for a counter or controller.
+
 ## Per-change observation template
 
 Copy this section for each material event. Use `None observed` when a phase ran

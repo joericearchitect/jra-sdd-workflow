@@ -3,8 +3,7 @@
 A spec-driven development workflow built on [OpenSpec](https://github.com/Fission-AI/OpenSpec),
 for delivering change with AI coding assistants — [Claude Code](https://claude.com/claude-code),
 [Codex](https://developers.openai.com/codex/cli), and DeepSeek through
-[Cline](https://cline.bot), [Continue](https://continue.dev), or
-[Aider](https://aider.chat).
+[Cline](https://cline.bot) or [Continue](https://continue.dev).
 
 **Manual first.** Every step here is designed to be driven by a human. A step is
 automated only after it has been performed by hand enough times to know what it
@@ -79,7 +78,8 @@ precise enough for a human to review. Vague artifacts fail both readers.
 ## What is here
 
 - **Workflow documentation** — the lifecycle, phase by phase, in prose you can follow by hand.
-- **Assistant commands** — thin Claude Code and Codex adapters for each phase.
+- **Assistant commands** — generated assistant-specific entries that expose the
+  selected workflow actions.
 - **Artifact quality rules** — declarative required sections and terms for
   proposals, specs, designs, and task lists, plus the validator that enforces them.
 - **Linkage validation** — CI that requires every pull request to name its issue
@@ -122,8 +122,8 @@ the only reliable way to catch it early.
   runs from a known, verified location — never from a script found inside the
   target repository.
 - **Assistant-neutral by construction.** No phase depends on a capability unique
-  to one tool or model. Where a tool needs its own entry point, that entry point
-  is a thin pointer to shared, canonical instructions.
+  to one tool or model. Where a tool needs its own entry point, the checked-in
+  generated assistant-specific entry exposes the selected workflow actions.
 
 ## Roadmap
 
