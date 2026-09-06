@@ -261,6 +261,58 @@ review; it does not approve implementation.
 - Automation conclusion: none. The measurement is a manual campaign
   checkpoint, not authorization for a counter or controller.
 
+### OBS-007 — PF3 lifecycle recheck released candidate 1 for Explore
+
+- Candidate/change: campaign preflight / PF1–PF3 disposition recheck.
+- Phase: post-lifecycle campaign-entry reconciliation.
+- Expected behavior: candidate 1 remains `Blocked` until PF1, PF2, and PF3
+  have closed issues, merged implementation and lifecycle-record PRs, archived
+  changes, matching observation evidence, a passing complete validation set,
+  and default-branch inclusion.
+- Observed behavior: PF1 ([issue #2](https://github.com/joericearchitect/jra-sdd-workflow/issues/2),
+  [PR #3](https://github.com/joericearchitect/jra-sdd-workflow/pull/3),
+  [PR #4](https://github.com/joericearchitect/jra-sdd-workflow/pull/4), and
+  its archived change; [IFL-001 and IFL-005](../notes/issue-and-friction-log.md)
+  record its validation and lifecycle friction), PF2 ([issue #8](https://github.com/joericearchitect/jra-sdd-workflow/issues/8),
+  [PR #9](https://github.com/joericearchitect/jra-sdd-workflow/pull/9),
+  [PR #10](https://github.com/joericearchitect/jra-sdd-workflow/pull/10), its
+  archived change, and OBS-005), and PF3 ([issue #12](https://github.com/joericearchitect/jra-sdd-workflow/issues/12),
+  [PR #13](https://github.com/joericearchitect/jra-sdd-workflow/pull/13),
+  [PR #14](https://github.com/joericearchitect/jra-sdd-workflow/pull/14), its
+  archived change, and OBS-006) are all durable. Their lifecycle commits are
+  reachable from the reviewed default branch. No accepted blocking finding is
+  open, and this follow-up's complete validation set passed.
+- Evidence: archived OpenSpec records; PF1's IFL-001/IFL-005, PF2's OBS-005,
+  and PF3's OBS-006; closed PF1–PF3 issues in their configured Project
+  completion state; merged PRs and lifecycle-commit ancestry; and the
+  validation commands recorded in this follow-up's tasks.
+- Blocker or impact: the original PF3 lifecycle record omitted this campaign
+  ledger update, leaving the roadmap stale even though delivery was complete.
+- Documented exit/recovery: record the recheck in a separate scoped change,
+  preserve PF3's delivered cleanup resources, and change only the roadmap state
+  from `Blocked` to `Not started`. If any input later drifts, return candidate 1
+  to `Blocked` and refresh the affected evidence.
+- Recovery attempts and result: the delivered lifecycle resources were not
+  reused; this documentation-only correction records the missing evidence and
+  leaves candidate 1's GitHub issue and Project state unchanged.
+- Prior matching occurrences: OBS-001 recorded an earlier roadmap/external
+  intake lag; this is the first post-lifecycle recurrence.
+- Skipped, unavailable, or unresolved evidence: no living-spec Sync applies to
+  PF3 because it declares `skip_specs: true`. Candidate 1 Explore remains
+  unstarted and requires its own authorization.
+- Possible post-campaign improvement: assess whether lifecycle-record review
+  checklists need a more explicit campaign-ledger prompt only after repeated
+  manual evidence; this observation does not authorize automation.
+- Workspace cleanup schema/run: not applicable; PF3 cleanup remains a separate
+  authorized action.
+- Registered and final outcome counts: not applicable to this record-only
+  correction.
+- Resume used: No.
+- Manual effort and bounded friction codes: `LIFECYCLE-LEDGER-OMISSION`.
+- Qualifying cleanup run: No; this recheck did not clean a workspace resource.
+- Automation conclusion: none. One observed omission is below the campaign
+  threshold and remains evidence for later design review only.
+
 ## Per-change observation template
 
 Copy this section for each material event. Use `None observed` when a phase ran
