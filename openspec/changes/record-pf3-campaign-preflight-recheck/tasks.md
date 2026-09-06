@@ -36,7 +36,7 @@
   Depends on: 2.1.
   Evidence: review finds no unsupported gate claim, premature `In progress`,
   candidate GitHub-state mutation, sensitive value, or second repair need.
-- [ ] 2.3 At Gate 3, pause with the current reviewed head and verification
+- [x] 2.3 At Gate 3, pause with the current reviewed head and verification
   evidence for a human decision. If the human selects independent review,
   obtain a fresh read-only review and handle its bounded objective-fix/test
   loop; otherwise record direct closure authorization for the exact head before
