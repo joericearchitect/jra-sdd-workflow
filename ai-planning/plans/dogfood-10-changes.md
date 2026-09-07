@@ -73,8 +73,9 @@ does not qualify.
 - Candidate 4 is `In progress` after [implementation PR #27](https://github.com/joericearchitect/jra-sdd-workflow/pull/27)
   delivered the approved label alignment and closed
   [issue #26](https://github.com/joericearchitect/jra-sdd-workflow/issues/26).
-  Its synced living specification, archive, lifecycle-record delivery, and
-  workspace cleanup remain in progress.
+  Its synced living specification and dated archive are in
+  [lifecycle-record PR #28](https://github.com/joericearchitect/jra-sdd-workflow/pull/28);
+  delivery and workspace cleanup remain in progress.
 
 Status values are alternatives, not a mandatory sequence:
 `Not started` | `In progress` | `Blocked` | `Done`.
