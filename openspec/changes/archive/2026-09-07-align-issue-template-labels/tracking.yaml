@@ -1,0 +1,15 @@
+schema_version: 1
+openspec:
+  change: align-issue-template-labels
+github:
+  repository: joericearchitect/jra-sdd-workflow
+  issue: 26
+  issue_url: https://github.com/joericearchitect/jra-sdd-workflow/issues/26
+  project_owner: joericearchitect
+  project_number: 1
+implementation_repositories:
+  - repository: joericearchitect/jra-sdd-workflow
+    default_branch: main
+    paths:
+      - .github/ISSUE_TEMPLATE/bug.yml
+      - .github/ISSUE_TEMPLATE/feature.yml
