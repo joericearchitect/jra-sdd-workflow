@@ -50,14 +50,22 @@ does not qualify.
 - PF1, PF2, and PF3 are delivered and archived. Their issue, pull-request,
   archive, observation, default-branch, and validation evidence was rechecked
   in OBS-007 before this roadmap transition.
-- Candidate 1 is `Not started` after the passing preflight recheck in
-  [review disposition `DRR-2026-09-03-01`](../review-records/2026-09-03-dogfood-preflight-review-disposition.md).
-  Raw model review output remains temporary scratch; this disposition and the
-  recorded recheck are the durable sources for accepted findings and readiness.
+- Candidate 1 is `Done`: [issue #1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1),
+  [implementation PR #18](https://github.com/joericearchitect/jra-sdd-workflow/pull/18),
+  [lifecycle-record PR #19](https://github.com/joericearchitect/jra-sdd-workflow/pull/19),
+  its archived change, and its completed cleanup receipt are current.
+- Candidate 2 is `Done`: [issue #20](https://github.com/joericearchitect/jra-sdd-workflow/issues/20),
+  [implementation PR #21](https://github.com/joericearchitect/jra-sdd-workflow/pull/21),
+  [lifecycle-record PR #22](https://github.com/joericearchitect/jra-sdd-workflow/pull/22),
+  its archived change, and its completed cleanup receipt are current. OBS-008
+  records the campaign's first frictionless end-to-end run and a clean-run
+  streak of one.
 - At planning baseline, the repository had 9 passing Node tests; the hardcoded-environment validator
   passes; `openspec validate --all --strict` reports no items to validate.
-- The planning files are durable. Candidate 1 may enter Explore only after its
-  own explicit authorization; it becomes `In progress` when that Explore starts.
+- Candidate 3 is `In progress` after its approved Explore. Its
+  [issue #23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23)
+  records the agreed documentation policy and scope; planning artifacts remain
+  pending the Explore-to-Propose gate.
 
 Status values are alternatives, not a mandatory sequence:
 `Not started` | `In progress` | `Blocked` | `Done`.
@@ -69,9 +77,9 @@ exist.
 
 | # | Proposed OpenSpec change | Issue | Outcome | Hard dependencies | Status |
 |---|---|---|---|---|---|
-| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Not started |
-| 2 | `docs-definition-of-done` | TBD | Contributors can identify entry, exit, evidence, and recovery expectations for every lifecycle phase | None | Not started |
-| 3 | `docs-pr-linkage-contract` | TBD | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | Not started |
+| 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Done |
+| 2 | `docs-definition-of-done` | [#20](https://github.com/joericearchitect/jra-sdd-workflow/issues/20) | Contributors can identify entry, exit, evidence, and recovery expectations for every lifecycle phase | None | Done |
+| 3 | `docs-pr-linkage-contract` | [#23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23) | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | In progress |
 | 4 | `align-issue-template-labels` | TBD | Issue-form labels and live repository labels agree, with a documented recovery path | None | Not started |
 | 5 | `add-docs-issue-template` | TBD | Documentation work has an intake form using verified labels and the existing SDD fields | 4 | Not started |
 | 6 | `remove-unused-sample-fixture-config` | TBD | Artifact rules contain no dangling fixture setting that no validator consumes | None | Not started |

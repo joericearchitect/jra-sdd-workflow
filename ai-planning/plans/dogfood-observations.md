@@ -313,6 +313,49 @@ review; it does not approve implementation.
 - Automation conclusion: none. One observed omission is below the campaign
   threshold and remains evidence for later design review only.
 
+### OBS-008 — candidate 2 completed the first frictionless campaign run
+
+- Candidate/change: candidate 2 / `docs-definition-of-done`.
+- Phase: full manual lifecycle through implementation delivery, documentation-
+  only Sync classification, Archive, lifecycle-record delivery, and Workspace
+  cleanup.
+- Expected behavior: the selected change completes through the documented
+  human gates with current review, validation, issue/Project reconciliation,
+  separate delivery records, and exact cleanup evidence.
+- Observed behavior: [issue #20](https://github.com/joericearchitect/jra-sdd-workflow/issues/20),
+  [implementation PR #21](https://github.com/joericearchitect/jra-sdd-workflow/pull/21),
+  [lifecycle-record PR #22](https://github.com/joericearchitect/jra-sdd-workflow/pull/22),
+  and the [archived change](../../openspec/changes/archive/2026-09-06-docs-definition-of-done/)
+  completed as expected. Two normal in-scope review-feedback issues were
+  resolved through the ordinary fix, test, and fresh-review loop; no exception
+  recovery or workflow workaround was needed.
+- Evidence: both PRs merged with passing required checks; the issue is closed
+  and its configured Project item is Done; the archive is on the default
+  branch; and the validated local cleanup receipt records the two registered
+  delivery branches as completed.
+- Blocker or impact: none.
+- Documented exit/recovery: apply ordinary scoped correction, affected and
+  complete validation, and fresh review for objective feedback; no separate
+  recovery path was invoked.
+- Recovery attempts and result: two normal feedback/fix/test loops completed;
+  both review conclusions were clean afterward.
+- Prior matching occurrences: none. This is the first frictionless end-to-end
+  campaign run.
+- Skipped, unavailable, or unresolved evidence: living-spec Sync was not
+  applicable because this documentation-only change declared `skip_specs: true`.
+- Possible post-campaign improvement: none from this run. Continue the manual
+  campaign and observe whether the clean-run streak persists.
+- Workspace cleanup schema/run: v1 / 1.
+- Registered and final outcome counts: 2 registered branches; 2 completed
+  exact local actions.
+- Resume used: No.
+- Manual effort and bounded friction codes: action entries recorded 0 whole
+  minutes; None observed.
+- Qualifying cleanup run: Yes; the run began with registered resources, every
+  delivery gate passed, and the validated receipt is complete.
+- Automation conclusion: none. This milestone starts a frictionless-run streak
+  at 1; it does not change the manual-first boundary or authorize automation.
+
 ## Per-change observation template
 
 Copy this section for each material event. Use `None observed` when a phase ran
