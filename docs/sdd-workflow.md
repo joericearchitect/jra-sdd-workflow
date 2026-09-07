@@ -70,6 +70,21 @@ primary worktree, force options, broad patterns, legacy resources, or unknown
 resources. A remote branch is eligible only when its exact head is proved merged
 into the current default branch.
 
+## Definition of Done for Selected Actions
+
+Use this as a concise operating reference. The linked detailed guidance remains
+authoritative; this table does not add a lifecycle phase or automate a
+transition.
+
+| Action | Enter when | Done when | If the gate does not pass |
+|---|---|---|---|
+| [Explore](#selected-actions) | A candidate, its current sources, and relevant external-state hazards are identified. | The outcome, scope, non-goals, acceptance evidence, dependencies, and recovery are practical enough for the [Explore-to-Propose gate](#human-review-gates). | Keep investigating or return the unresolved decision to human review; do not create artifacts or mutate GitHub state. |
+| [Propose](#selected-actions) | The Explore-to-Propose gate authorizes planning and the issue linkage needed for [tracking metadata](#author-change-tracking-metadata) is known. | The proposal, design, tasks, any justified delta specs, and tracking metadata satisfy the [planning artifact contract](#planning-artifact-quality-contract) and are ready for planning review. | Correct the named planning artifact and revalidate; if intent or observable behavior is unclear, return to Explore rather than inventing a requirement. |
+| [Apply](#operate-a-change) | Planning review and the Planning-to-Apply gate authorize the named change; plan delivery resources before creation, then register only exact inspected matches under [resource-registration guidance](#register-local-delivery-resources-before-creation). | Every task has current evidence, the scoped implementation is self-reviewed, and the required checks are available for Verify. | Pause on an unclear requirement or blocker. A first bounded objective correction may proceed with evidence; a second repair to the same component requires design review. |
+| [Verify](#validate) | Implemented tasks, their evidence, and the current change head are available. | The implementation matches its proposal, applicable delta specs, design, and tasks; focused and complete checks support the current reviewed head for the [Verification-to-closure gate](#human-review-gates). | Apply only an authorized objective correction, then rerun affected and complete checks. Return material decisions or a second repair to review. |
+| [Sync](../.agents/skills/openspec-sync-specs/SKILL.md) | Implementation delivery is merged and a delta spec changes a durable capability. | The affected living spec is merged and validated without claiming delivery. A documentation-only change with `skip_specs: true` records no invented living-spec update. | If a required delta is absent or cannot be reconciled, preserve the existing living spec, correct the planning/delivery evidence, and revalidate before Archive. |
+| [Archive](../openspec/config.yaml) | Delivery is merged, or a human-approved no-code reason is recorded; the primary issue is closed, and any applicable Sync result is validated. | The change is preserved at a dated archive path with its issue and delivery linkage; lifecycle-record delivery and cleanup remain separate stages. | Preserve the active change, finish or repair the missing delivery or Sync evidence, and rerun the archive checks. |
+
 ## Prerequisites
 
 - Git.
