@@ -87,6 +87,32 @@ precise enough for a human to review. Vague artifacts fail both readers.
 - **Intake templates** — issue and pull request templates that capture the right
   information at the start.
 
+## Pull-request linkage
+
+Every pull request names its GitHub issue and OpenSpec change. For an
+implementation pull request, use the canonical closing form:
+
+```text
+Closes #<issue>
+OpenSpec change: <change-name>
+```
+
+For a lifecycle-record pull request, keep the same change marker but use the
+canonical non-closing linkage form:
+
+```text
+Related to #<issue>
+OpenSpec change: <change-name>
+```
+
+`Fixes #<issue>` and `Resolves #<issue>` are also accepted closing alternatives
+for an implementation pull request. The `OpenSpec change:` marker is required;
+without it, the PR contract validator rejects the body.
+
+These forms satisfy the syntax contract only. Linkage validation also confirms
+that the named active or archived change has valid tracking metadata and that
+the issue number in the PR body matches that metadata.
+
 ## Two standing constraints
 
 These are load-bearing. They exist because a previous attempt at this violated
