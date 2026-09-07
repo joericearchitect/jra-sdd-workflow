@@ -16,7 +16,10 @@ does not qualify.
 
 ## Delivery assumptions
 
-- Work is serial: only one campaign change is active at a time.
+- Work proceeds in the dependency-valid manual batches defined below. Each
+  parallel session owns one selected change, its own issue, worktree, resource
+  registration, evidence, and human-gate decisions; a batch does not share an
+  authorization across its changes.
 - Proposal and Apply remain separate authorization boundaries.
 - Each candidate states its own scope, non-goals, acceptance evidence, local
   risk, recovery, and external-state assumptions. Those statements do not
@@ -60,12 +63,19 @@ does not qualify.
   its archived change, and its completed cleanup receipt are current. OBS-008
   records the campaign's first frictionless end-to-end run and a clean-run
   streak of one.
+- Candidate 3 is `Done`: [issue #23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23),
+  [implementation PR #24](https://github.com/joericearchitect/jra-sdd-workflow/pull/24),
+  [lifecycle-record PR #25](https://github.com/joericearchitect/jra-sdd-workflow/pull/25),
+  its [archived change](../../openspec/changes/archive/2026-09-06-docs-pr-linkage-contract/),
+  and its completed cleanup receipt are current. The clean-run streak is two.
 - At planning baseline, the repository had 9 passing Node tests; the hardcoded-environment validator
   passes; `openspec validate --all --strict` reports no items to validate.
-- Candidate 3 is `In progress` after its approved Explore. Its
-  [issue #23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23)
-  records the agreed documentation policy and scope; planning artifacts remain
-  pending the Explore-to-Propose gate.
+- Candidate 4 is `In progress` after [implementation PR #27](https://github.com/joericearchitect/jra-sdd-workflow/pull/27)
+  delivered the approved label alignment and closed
+  [issue #26](https://github.com/joericearchitect/jra-sdd-workflow/issues/26).
+  Its synced living specification and dated archive are in
+  [lifecycle-record PR #28](https://github.com/joericearchitect/jra-sdd-workflow/pull/28);
+  delivery and workspace cleanup remain in progress.
 
 Status values are alternatives, not a mandatory sequence:
 `Not started` | `In progress` | `Blocked` | `Done`.
@@ -79,8 +89,8 @@ exist.
 |---|---|---|---|---|---|
 | 1 | `docs-tracking-format` | [#1](https://github.com/joericearchitect/jra-sdd-workflow/issues/1) | A contributor can author valid `tracking.yaml` without reading validator source | PF1–PF3 in `DRR-2026-09-03-01` | Done |
 | 2 | `docs-definition-of-done` | [#20](https://github.com/joericearchitect/jra-sdd-workflow/issues/20) | Contributors can identify entry, exit, evidence, and recovery expectations for every lifecycle phase | None | Done |
-| 3 | `docs-pr-linkage-contract` | [#23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23) | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | In progress |
-| 4 | `align-issue-template-labels` | TBD | Issue-form labels and live repository labels agree, with a documented recovery path | None | Not started |
+| 3 | `docs-pr-linkage-contract` | [#23](https://github.com/joericearchitect/jra-sdd-workflow/issues/23) | README users can author implementation and lifecycle-record PR bodies that pass linkage validation | None | Done |
+| 4 | `align-issue-template-labels` | [#26](https://github.com/joericearchitect/jra-sdd-workflow/issues/26) | Issue-form labels and live repository labels agree, with a documented recovery path | None | In progress |
 | 5 | `add-docs-issue-template` | TBD | Documentation work has an intake form using verified labels and the existing SDD fields | 4 | Not started |
 | 6 | `remove-unused-sample-fixture-config` | TBD | Artifact rules contain no dangling fixture setting that no validator consumes | None | Not started |
 | 7 | `resolve-pr-validation-signal` | TBD | The unused PR-validation signal is removed unless Explore identifies a concrete consumer with distinct necessary behavior | None | Not started |
@@ -91,6 +101,26 @@ exist.
 The numbered order is the campaign sequence. It is not a dependency claim;
 only the prerequisites in the hard-dependencies column block candidate
 readiness.
+
+## Remaining delivery batches
+
+The remaining candidates are delivered in manual batches of at most three. A
+candidate may start only after its listed hard dependencies are complete and its
+own Explore, planning review, and Apply authorization have passed. Parallel
+work does not authorize another candidate's external mutation, merge, Sync,
+Archive, or cleanup.
+
+| Batch | Candidates | Entry condition | Coordination boundary |
+|---|---|---|---|
+| 1 | 5 `add-docs-issue-template`; 6 `remove-unused-sample-fixture-config`; 8 `add-tracking-schema-examples` | Start after candidate 4 is fully complete; candidate 5 then has its verified-label dependency. | Each candidate owns distinct implementation surfaces and separate GitHub/worktree resources. |
+| 2 | 7 `resolve-pr-validation-signal`; 9 `reject-ambiguous-archive-lookup` | Start after batch 1 is complete. | Explore and Propose may run in parallel, but Apply and merge are serialized because both can affect OpenSpec-linkage validation and its direct tests. |
+| Final | 10 `docs-dogfood-findings` | Start only after candidates 4 through 9 are `Done` and their sanitized observations are durable. | Candidate 10 is a single synthesis change and does not invent missing recovery evidence. |
+
+Sessions use separate registered worktrees and branches. Merge implementation
+and lifecycle-record pull requests one at a time from freshly rebased heads,
+then record each candidate's outcome in the shared campaign roadmap and
+observation ledger before the next shared-record merge. This serializes shared
+record updates without serializing the independent manual sessions.
 
 ## Candidate readiness
 
@@ -272,7 +302,9 @@ Complete once before candidate 1:
 
 ## Per-change loop
 
-Repeat for each candidate, without overlapping active changes:
+Repeat for each candidate. Candidates in an approved batch may be active in
+separate manual sessions, subject to the batch entry conditions and shared
+record coordination above:
 
 1. **Issue and Project** — reuse the named issue or create one from the accepted
    candidate; add it to the configured Project; record its current configured
