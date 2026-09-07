@@ -70,7 +70,7 @@
   Evidence: Review confirms the rehearsal, recovery evidence, exact mutation
   boundaries, portability, and non-goals remain coherent.
 
-- [ ] 4.3 Deliver the reviewed implementation through the repository's normal
+- [x] 4.3 Deliver the reviewed implementation through the repository's normal
   pull-request process with the issue link and OpenSpec change name.
   Depends on: 4.2 and approval of the Verification-to-closure gate.
   Evidence: The delivery pull request links the primary issue and identifies
