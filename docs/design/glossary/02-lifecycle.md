@@ -45,7 +45,21 @@ implementation starts.
 **Terminology Source:** This repository (jra-sdd-workflow) — a human checkpoint
 added to the OpenSpec lifecycle.
 
-**Related:** planning boundary, apply
+**Related:** planning boundary, apply, packet (review-ready packet),
+cause-aware third-pass stop
+
+## Cause-aware third-pass stop
+
+The third review of the same work is a stop-and-diagnose point, not the start
+of a fourth ordinary review. What happens next depends on *why* it did not
+settle — a repair that created new problems, a check that was never done, an
+outside blocker, a reviewer mistake, or a missing owner decision.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a review-loop
+stopping rule.
+
+**Related:** planning review, provenance (finding provenance), recovery,
+entry/exit conditions
 
 ## Planning boundary
 

@@ -93,8 +93,8 @@ exist.
 | 4 | `align-issue-template-labels` | [#26](https://github.com/joericearchitect/jra-sdd-workflow/issues/26) | Issue-form labels and live repository labels agree, with a documented recovery path | None | In progress |
 | 5 | `add-docs-issue-template` | TBD | Documentation work has an intake form using verified labels and the existing SDD fields | 4 | Not started |
 | 6 | `remove-unused-sample-fixture-config` | TBD | Artifact rules contain no dangling fixture setting that no validator consumes | None | Not started |
-| 7 | `resolve-pr-validation-signal` | TBD | The unused PR-validation signal is removed unless Explore identifies a concrete consumer with distinct necessary behavior | None | Not started |
-| 8 | `add-tracking-schema-examples` | TBD | A checked positive example passes tracking validation and a checked negative example fails for the documented reason | 1 | Not started |
+| 7 | `resolve-pr-validation-signal` | [#30](https://github.com/joericearchitect/jra-sdd-workflow/issues/30) | The unused PR-validation signal and its changed-path plumbing are removed unless Explore identifies a concrete consumer with distinct necessary behavior | None | In progress |
+| 8 | `add-tracking-schema-examples` | [#31](https://github.com/joericearchitect/jra-sdd-workflow/issues/31) | A checked positive example passes tracking validation and a checked negative example fails for the documented reason | 1, 7 | Blocked — Batch 1 incomplete |
 | 9 | `reject-ambiguous-archive-lookup` | TBD | Archive lookup accepts exactly one canonical change match and rejects zero or ambiguous suffix matches with correction guidance | None | Not started |
 | 10 | `docs-dogfood-findings` | TBD | The campaign's observed friction, recoveries, non-events, and automation conclusions are recorded without fabricating a recovery | 1–9 | Not started |
 
@@ -104,16 +104,16 @@ readiness.
 
 ## Remaining delivery batches
 
-The remaining candidates are delivered in manual batches of at most three. A
-candidate may start only after its listed hard dependencies are complete and its
-own Explore, planning review, and Apply authorization have passed. Parallel
-work does not authorize another candidate's external mutation, merge, Sync,
-Archive, or cleanup.
+The remaining candidates are delivered in these manual batches. A candidate
+may start only after its listed hard dependencies are complete and its own
+Explore, planning review, and Apply authorization have passed. Parallel work
+does not authorize another candidate's external mutation, merge, Sync, Archive,
+or cleanup.
 
 | Batch | Candidates | Entry condition | Coordination boundary |
 |---|---|---|---|
-| 1 | 5 `add-docs-issue-template`; 6 `remove-unused-sample-fixture-config`; 8 `add-tracking-schema-examples` | Start after candidate 4 is fully complete; candidate 5 then has its verified-label dependency. | Each candidate owns distinct implementation surfaces and separate GitHub/worktree resources. |
-| 2 | 7 `resolve-pr-validation-signal`; 9 `reject-ambiguous-archive-lookup` | Start after batch 1 is complete. | Explore and Propose may run in parallel, but Apply and merge are serialized because both can affect OpenSpec-linkage validation and its direct tests. |
+| 1 | 5 `add-docs-issue-template`; 6 `remove-unused-sample-fixture-config`; 8 `add-tracking-schema-examples` | Start after candidate 4's implementation and lifecycle-record delivery are complete; candidate 5 then has its verified-label dependency. Candidate 7 planning may proceed in parallel, but Candidate 8 Apply stays blocked on Candidate 7 delivery. | Each candidate owns distinct implementation surfaces and separate GitHub/worktree resources. Keep candidates 7, 8, and 9 out of concurrent Apply because each can affect OpenSpec-linkage validation or its direct tests. |
+| 2 | 7 `resolve-pr-validation-signal`; 9 `reject-ambiguous-archive-lookup` | Candidate 7 is already in planning/implementation; candidate 9 starts after batch 1 unless its hard dependencies are already met. | Explore and Propose may run in parallel, but Apply and merge are serialized because both can affect OpenSpec-linkage validation and its direct tests. |
 | Final | 10 `docs-dogfood-findings` | Start only after candidates 4 through 9 are `Done` and their sanitized observations are durable. | Candidate 10 is a single synthesis change and does not invent missing recovery evidence. |
 
 Sessions use separate registered worktrees and branches. Merge implementation
@@ -206,14 +206,15 @@ not receive an invented delta requirement merely to satisfy artifact validation.
 
 ### 7. `resolve-pr-validation-signal`
 
-- Scope: inspect the calculated `requiresOpenSpecValidation` return field from
-  the PR/linkage validators and remove it with its direct tests unless Explore
+- Scope: inspect the calculated `requiresOpenSpecValidation` return field and
+  its changed-path plumbing, then remove the full dead pathway unless Explore
   identifies a concrete consumer with distinct necessary behavior.
 - Non-goals: add a second CI policy, hidden validation gate, or unrelated PR
   workflow behavior.
-- Acceptance: repository search finds no consumer and the dead field/tests are
-  removed, or Explore records the concrete consumer and pauses for a scoped
-  design decision.
+- Acceptance: repository search finds no consumer; the dead field and
+  changed-path pathway are removed; focused regression coverage preserves
+  existing PR/linkage outcomes; or Explore records the concrete consumer and
+  pauses for a scoped design decision.
 - Hazard/recovery: removing a hidden consumer would be incompatible; search
   current sources before changing code and revert the focused removal if a
   consumer is discovered.

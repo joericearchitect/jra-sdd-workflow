@@ -34,9 +34,9 @@ together:
 |---|---|
 | `01-foundations.md` | The framework and its guiding principles |
 | `02-lifecycle.md` | The phases a change moves through |
-| `03-change-and-artifacts.md` | The change folder, its files, and spec concepts |
+| `03-change-and-artifacts.md` | The change folder, its files, spec concepts, and the bound review set |
 | `04-github-and-delivery.md` | GitHub-side terms (issues, PRs, labels) |
-| `05-validation-and-recovery.md` | Checks, proof, and how to undo |
+| `05-validation-and-recovery.md` | Checks, proof, review coverage, and how to undo |
 | `06-industry-terms.md` | Terms borrowed from other industries (networking, AI, etc.) |
 
 ## Entry format

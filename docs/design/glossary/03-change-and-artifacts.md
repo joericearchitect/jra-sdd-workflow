@@ -21,7 +21,20 @@ proposal, specs, design, and tasks — plus this project's extra `tracking.yaml`
 **Terminology Source:** Industry — software engineering (a produced file);
 adopted by OpenSpec for change documents.
 
-**Related:** change, proposal.md, spec, design.md, tasks.md, tracking.yaml
+**Related:** change, proposal.md, spec, design.md, tasks.md, tracking.yaml,
+packet (review-ready packet)
+
+## Packet (review-ready packet)
+
+The exact bundle of files and proof a reviewer is asked to look at for one
+piece of work — the plan, the listed paths, the checks, and any earlier
+decisions. It is assembled from files that already exist; it is not a new file
+format.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a review-readiness
+term for the bound set of artifacts.
+
+**Related:** artifact, evidence, planning review, taxonomy (defect taxonomy)
 
 ## proposal.md
 

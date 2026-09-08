@@ -33,7 +33,44 @@ command" is not evidence that it succeeded.
 **Terminology Source:** Industry — software engineering (quality); the
 "Evidence:" field is this repository's.
 
-**Related:** evidence over assertion, validator
+**Related:** evidence over assertion, validator, provenance (finding
+provenance)
+
+## Taxonomy (defect taxonomy)
+
+The named kinds of problems a review must look for — for example missing
+coverage, unproducible proof, unsafe task order, or facts this change cannot
+edit. Reading every file without saying which kinds were checked is an
+incomplete review.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a
+review-coverage checklist, not a biological classification.
+
+**Related:** packet (review-ready packet), planning review, provenance (finding
+provenance)
+
+## Provenance (finding provenance)
+
+A label on a later finding that says where it came from: still unfixed,
+created by a repair, present all along but missed, caused by something this
+change cannot edit, or a reviewer mistake.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a finding
+lifecycle label; "provenance" here means origin, not art-history paperwork.
+
+**Related:** taxonomy (defect taxonomy), correction fan-out, evidence,
+cause-aware third-pass stop
+
+## Correction fan-out
+
+The rule that a fix is not one edited line. After you change a fact, you must
+find every other place that still says the old thing, treat newly added lines
+as new content, and review that whole set together.
+
+**Terminology Source:** This repository (jra-sdd-workflow) — a correction
+discipline rule.
+
+**Related:** recovery, evidence, apply, packet (review-ready packet)
 
 ## Recovery / rollback
 
@@ -44,7 +81,7 @@ trap.
 **Terminology Source:** Industry — software engineering (deployment and
 operations).
 
-**Related:** entry/exit conditions
+**Related:** entry/exit conditions, correction fan-out
 
 ## Fixture
 
