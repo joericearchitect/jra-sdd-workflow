@@ -6,8 +6,8 @@ import path from "node:path";
 import { readTrackingFile } from "./lib/tracking.mjs";
 import { validatePrContract } from "./validate-pr-contract.mjs";
 
-export function validateOpenSpecLinkage({ body, changedPaths = [], repoRoot = process.cwd() }) {
-  const pr = validatePrContract({ body, changedPaths });
+export function validateOpenSpecLinkage({ body, repoRoot = process.cwd() }) {
+  const pr = validatePrContract({ body });
   const issues = [...pr.issues];
   if (!pr.change) {
     return { valid: false, issues, pr };
@@ -54,18 +54,16 @@ export function validateOpenSpecLinkage({ body, changedPaths = [], repoRoot = pr
     valid: issues.length === 0,
     issues,
     pr,
-    changeDir,
-    requiresOpenSpecValidation: pr.requiresOpenSpecValidation
+    changeDir
   };
 }
 
 function parseArgs(argv) {
-  const args = { json: false, changedPaths: [] };
+  const args = { json: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--json") args.json = true;
     else if (arg === "--body-file") args.body = fs.readFileSync(argv[++index], "utf8");
-    else if (arg === "--changed-paths-file") args.changedPaths = fs.readFileSync(argv[++index], "utf8").split(/\r?\n/).filter(Boolean);
     else throw new Error(`unexpected argument: ${arg}`);
   }
   return args;
