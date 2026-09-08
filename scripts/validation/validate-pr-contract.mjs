@@ -2,7 +2,7 @@
 
 import fs from "node:fs";
 
-export function validatePrContract({ body, changedPaths = [] }) {
+export function validatePrContract({ body }) {
   const issues = [];
   const issueMatch = body.match(/\b(?:Closes|Fixes|Resolves|Related to)\s+#(\d+)\b/i);
   const changeMatch = body.match(/OpenSpec change:\s*`?([a-z0-9-]+)`?/i);
@@ -24,18 +24,16 @@ export function validatePrContract({ body, changedPaths = [] }) {
     valid: issues.length === 0,
     issues,
     issue: issueMatch ? Number(issueMatch[1]) : null,
-    change: changeMatch ? changeMatch[1] : null,
-    requiresOpenSpecValidation: changedPaths.some((file) => /^(openspec\/|skills\/|\.agents\/|\.claude\/|workflows\/|scripts\/|evals\/|\.github\/workflows\/)/.test(file))
+    change: changeMatch ? changeMatch[1] : null
   };
 }
 
 function parseArgs(argv) {
-  const args = { json: false, changedPaths: [] };
+  const args = { json: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === "--json") args.json = true;
     else if (arg === "--body-file") args.body = fs.readFileSync(argv[++index], "utf8");
-    else if (arg === "--changed-paths-file") args.changedPaths = fs.readFileSync(argv[++index], "utf8").split(/\r?\n/).filter(Boolean);
     else throw new Error(`unexpected argument: ${arg}`);
   }
   return args;

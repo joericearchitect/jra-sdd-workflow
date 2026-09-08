@@ -5,7 +5,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
   linkage:
@@ -18,13 +17,7 @@ jobs:
           script: |
             const fs = require("fs");
             fs.writeFileSync("pr-body.md", context.payload.pull_request.body || "");
-            const files = await github.paginate(github.rest.pulls.listFiles, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
-            });
-            fs.writeFileSync("changed-paths.txt", files.map((file) => file.filename).join("\n"));
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: node scripts/validation/validate-openspec-linkage.mjs --body-file pr-body.md --changed-paths-file changed-paths.txt
+      - run: node scripts/validation/validate-openspec-linkage.mjs --body-file pr-body.md

@@ -1,0 +1,18 @@
+schema_version: 1
+openspec:
+  change: resolve-pr-validation-signal
+github:
+  repository: joericearchitect/jra-sdd-workflow
+  issue: 30
+  issue_url: https://github.com/joericearchitect/jra-sdd-workflow/issues/30
+  project_owner: joericearchitect
+  project_number: 1
+implementation_repositories:
+  - repository: joericearchitect/jra-sdd-workflow
+    default_branch: main
+    paths:
+      - scripts/validation/validate-pr-contract.mjs
+      - scripts/validation/validate-openspec-linkage.mjs
+      - scripts/validation/test/pr-contract.test.mjs
+      - scripts/validation/test/openspec-linkage.test.mjs
+      - .github/workflows/openspec-linkage.yml
