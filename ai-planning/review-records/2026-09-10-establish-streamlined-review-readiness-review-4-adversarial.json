@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "skill": "base-code-review",
+  "status": "completed",
+  "mode": "interactive",
+  "summary": "Adversarial local review found two blockers and two high-severity planning and delivery-boundary defects across the active review-readiness change and latest preservation-record commit.",
+  "artifacts": [
+    {
+      "kind": "file",
+      "operation": "created",
+      "subject": "ai-planning/scratch/2026-09-10-adversarial-review-current-and-latest.json"
+    },
+    {
+      "kind": "file",
+      "operation": "created",
+      "subject": "ai-planning/scratch/2026-09-10-adversarial-review-current-and-latest.md"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "command",
+      "subject": "Git history and tree inspection show the latest commit is a42215f while the active change directory remains untracked.",
+      "result": "passed"
+    },
+    {
+      "id": "E2",
+      "type": "review",
+      "subject": "Cross-artifact reading of the active proposal, design, tasks, tracking metadata, and their cited preservation records.",
+      "result": "passed"
+    },
+    {
+      "id": "E3",
+      "type": "command",
+      "subject": "Git ancestry shows df8c0b7 and a42215f post-date 713553d and are not ancestors of the local default branch.",
+      "result": "passed"
+    },
+    {
+      "id": "E4",
+      "type": "test",
+      "subject": "Repository Node validation suite completed with 41 passing tests.",
+      "result": "passed"
+    },
+    {
+      "id": "E5",
+      "type": "validation",
+      "subject": "Tracking and OpenSpec artifact validation for establish-streamlined-review-readiness passed.",
+      "result": "passed"
+    },
+    {
+      "id": "E6",
+      "type": "validation",
+      "subject": "No-hardcoded-environment and strict OpenSpec validation passed for the current workspace.",
+      "result": "passed"
+    },
+    {
+      "id": "E7",
+      "type": "other",
+      "subject": "Live GitHub issue and pull-request state could not be inspected because the local GitHub CLI session is unauthenticated.",
+      "result": "informational"
+    }
+  ],
+  "assumptions": [
+    "Current change means the uncommitted establish-streamlined-review-readiness planning change and its declared in-scope working-tree documentation edits.",
+    "Most recent change means commit a42215f, the current HEAD commit on preserve-review-readiness-evidence."
+  ],
+  "openQuestions": [],
+  "nextAction": {
+    "kind": "user-decision",
+    "description": "Resolve the blockers before treating the active change as planning-ready or entering Apply, then request a fresh review against the new binding."
+  },
+  "details": {
+    "assurance": "local-review",
+    "worker": {
+      "executionIdentity": "codex-same-session-local-review",
+      "sameSession": true,
+      "readOnly": true,
+      "canMutate": false,
+      "canApprove": false
+    },
+    "reviewedScope": {
+      "targets": [
+        "ai-planning/design-briefs/2026-09-10-review-readiness-simplified-contract.md",
+        "ai-planning/review-records/2026-09-10-review-readiness-finding-dispositions.md",
+        "docs/design/glossary/02-lifecycle.md",
+        "docs/design/glossary/03-change-and-artifacts.md",
+        "docs/design/glossary/05-validation-and-recovery.md",
+        "openspec/changes/establish-streamlined-review-readiness"
+      ],
+      "contextPaths": [
+        "AGENTS.md",
+        "docs/sdd-workflow.md",
+        "openspec/config.yaml",
+        "ai-planning/review-records/2026-09-10-review-readiness-scope-observation-design-review.md"
+      ],
+      "evidenceIds": ["E1", "E2", "E3", "E4", "E5", "E6", "E7"]
+    },
+    "findings": [
+      {
+        "id": "AR-2026-09-10-001",
+        "severity": "blocker",
+        "disposition": "objective-fix",
+        "subject": "ai-planning/design-briefs/2026-09-10-review-readiness-simplified-contract.md",
+        "evidenceIds": ["E1", "E2"],
+        "impact": "The latest committed brief declares the planning-artifact rebuild done, but its commit tree contains none of the active change directory; the only copy is untracked. A durable record therefore asserts completion that a later reviewer cannot reproduce from the cited revision.",
+        "recommendation": "Do not mark the rebuild done until the exact artifact set has a durable binding. Either commit the planning directory before the claim or record it as explicitly pending with a reproducible artifact manifest and make the later entry gate verify that binding."
+      },
+      {
+        "id": "AR-2026-09-10-002",
+        "severity": "blocker",
+        "disposition": "objective-fix",
+        "subject": "docs/design/glossary/05-validation-and-recovery.md",
+        "evidenceIds": ["E1", "E2"],
+        "impact": "The working tree already adds the two glossary entries assigned to Apply task 4.1, although the proposal says this change creates planning artifacts only and task 4.1 depends on task 1.1, which itself depends on the gated task 0.1. This crosses the Planning-to-Apply boundary in the primary worktree and makes the current packet inconsistent with its own task graph.",
+        "recommendation": "Remove or isolate the task-4.1 implementation edits from the pre-Apply workspace. Reintroduce them only through the registered delivery worktree after the required approval and preservation-delivery gate are evidenced."
+      },
+      {
+        "id": "AR-2026-09-10-003",
+        "severity": "high",
+        "disposition": "objective-fix",
+        "subject": "openspec/changes/establish-streamlined-review-readiness/design.md",
+        "evidenceIds": ["E2"],
+        "impact": "The design calls the task-5.2 review record a change-owned working file and not a delivered path, while task 5.2 requires committing it so it is delivered and task 6.1 makes it part of the pull-request scope set. The same file consequently has incompatible delivery semantics, leaving the claimed authoritative scope check ambiguous.",
+        "recommendation": "Choose one model and use it consistently: classify the review record as a delivered provenance artifact outside the guidance inventory, or keep it out of the delivery branch and exclude it from the pull-request set. Update the design, task evidence, and scope-observation record together."
+      },
+      {
+        "id": "AR-2026-09-10-004",
+        "severity": "high",
+        "disposition": "objective-fix",
+        "subject": "openspec/changes/establish-streamlined-review-readiness/tasks.md",
+        "evidenceIds": ["E2", "E3"],
+        "impact": "Task 0.1 says its prerequisite delivery contains every preserved record cited by the plan but verifies only 713553d. The scope-observation design review and the governing-record reconciliation were added later in df8c0b7 and a42215f; a base can satisfy the pinned check while lacking the current governing decision or its revised sources.",
+        "recommendation": "Bind the entry gate to the exact preservation revision that contains the final cited sources, or to a versioned manifest of those sources and their digests. Do not accept path existence alone as proof that the current governing content was delivered."
+      }
+    ],
+    "coverage": [
+      {
+        "area": "Planning and Apply authorization boundary",
+        "status": "reviewed",
+        "evidenceIds": ["E1", "E2"]
+      },
+      {
+        "area": "Cross-artifact consistency and delivery scope",
+        "status": "reviewed",
+        "evidenceIds": ["E2", "E3"]
+      },
+      {
+        "area": "Repository validation and test evidence",
+        "status": "reviewed",
+        "evidenceIds": ["E4", "E5", "E6"]
+      },
+      {
+        "area": "Live issue and pull-request state",
+        "status": "gap",
+        "evidenceIds": ["E7"]
+      },
+      {
+        "area": "Application security, UI, dependencies, and runtime behavior",
+        "status": "not-applicable",
+        "evidenceIds": ["E2"]
+      }
+    ],
+    "standardsSelection": {
+      "selectedRuleIds": [],
+      "scopedOverrides": [],
+      "notApplicableRuleIds": []
+    },
+    "evidenceGaps": [
+      {
+        "id": "GAP-001",
+        "subject": "GitHub issue 33 and preservation pull-request delivery state",
+        "reason": "The local GitHub CLI session returned an authentication error, so the review could not independently confirm the current remote issue body, pull-request number, merge state, or changed-file list."
+      }
+    ],
+    "scopeSummary": "Read-only adversarial review of the active establish-streamlined-review-readiness planning change, its declared current documentation edits, and the latest commit a42215f. Other untracked OpenSpec changes were observed only as preserved unrelated work and were not reviewed."
+  }
+}
