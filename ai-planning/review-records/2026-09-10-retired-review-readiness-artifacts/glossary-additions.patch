@@ -1,0 +1,79 @@
+diff --git a/docs/design/glossary/02-lifecycle.md b/docs/design/glossary/02-lifecycle.md
+index 187ce16..7ae55c7 100644
+--- a/docs/design/glossary/02-lifecycle.md
++++ b/docs/design/glossary/02-lifecycle.md
+@@ -46,7 +46,7 @@ implementation starts.
+ added to the OpenSpec lifecycle.
+ 
+ **Related:** planning boundary, apply, packet (review-ready packet),
+-cause-aware third-pass stop
++cause-aware third-pass stop, independent reviewer, same-session local review
+ 
+ ## Cause-aware third-pass stop
+ 
+diff --git a/docs/design/glossary/03-change-and-artifacts.md b/docs/design/glossary/03-change-and-artifacts.md
+index c906822..c888177 100644
+--- a/docs/design/glossary/03-change-and-artifacts.md
++++ b/docs/design/glossary/03-change-and-artifacts.md
+@@ -34,7 +34,8 @@ format.
+ **Terminology Source:** This repository (jra-sdd-workflow) — a review-readiness
+ term for the bound set of artifacts.
+ 
+-**Related:** artifact, evidence, planning review, taxonomy (defect taxonomy)
++**Related:** artifact, evidence, planning review, taxonomy (defect taxonomy),
++independent reviewer, same-session local review
+ 
+ ## proposal.md
+ 
+diff --git a/docs/design/glossary/05-validation-and-recovery.md b/docs/design/glossary/05-validation-and-recovery.md
+index 1c2d461..a9a1228 100644
+--- a/docs/design/glossary/05-validation-and-recovery.md
++++ b/docs/design/glossary/05-validation-and-recovery.md
+@@ -47,7 +47,7 @@ incomplete review.
+ review-coverage checklist, not a biological classification.
+ 
+ **Related:** packet (review-ready packet), planning review, provenance (finding
+-provenance)
++provenance), independent reviewer, same-session local review
+ 
+ ## Provenance (finding provenance)
+ 
+@@ -59,7 +59,37 @@ change cannot edit, or a reviewer mistake.
+ lifecycle label; "provenance" here means origin, not art-history paperwork.
+ 
+ **Related:** taxonomy (defect taxonomy), correction fan-out, evidence,
+-cause-aware third-pass stop
++cause-aware third-pass stop, independent reviewer, same-session local review
++
++## Independent reviewer
++
++A fresh, read-only examiner of one bounded change that is isolated from whoever
++produced it: it sees only a sealed package of exact commits, files, and checks,
++and it must not receive the live workspace, prior findings, chat history, or a
++wanted conclusion. A new chat, a prompt that says "be independent," or a claim
++of freshness is not this role; this workflow starts it only when a human
++selects it, and a result that fails isolation is rejected.
++
++**Terminology Source:** This repository (jra-sdd-workflow) — an optional
++isolated review role; "independent" here means isolation from the implementer,
++not "a different conversation."
++
++**Related:** same-session local review, packet (review-ready packet), planning
++review, evidence
++
++## Same-session local review
++
++A review run by an ordinary assistant in the working copy, with normal tools
++and the live files in view — including the packet and any prior findings. It
++can find real problems, but it is not an independent reviewer: even a brand-new
++chat in the same workspace stays this kind of review unless it was launched as
++a sealed, read-only independent review.
++
++**Terminology Source:** This repository (jra-sdd-workflow) — the ordinary
++interactive review worker, contrasted with an independent reviewer.
++
++**Related:** independent reviewer, packet (review-ready packet), planning
++review, taxonomy (defect taxonomy)
+ 
+ ## Correction fan-out
+ 
