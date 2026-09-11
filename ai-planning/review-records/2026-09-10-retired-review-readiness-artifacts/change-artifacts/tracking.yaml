@@ -1,0 +1,22 @@
+schema_version: 1
+openspec:
+  change: "establish-streamlined-review-readiness"
+github:
+  repository: "joericearchitect/jra-sdd-workflow"
+  issue: 33
+  issue_url: "https://github.com/joericearchitect/jra-sdd-workflow/issues/33"
+  project_owner: "joericearchitect"
+  project_number: 1
+implementation_repositories:
+  - repository: "joericearchitect/jra-sdd-workflow"
+    default_branch: "main"
+    paths:
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "docs/design/glossary/02-lifecycle.md"
+      - "docs/design/glossary/03-change-and-artifacts.md"
+      - "docs/design/glossary/05-validation-and-recovery.md"
+      - "docs/review/adversarial-review.md"
+      - "docs/sdd-workflow.md"
+      - "openspec/config.yaml"
+      - "openspec/specs/review-readiness/spec.md"
