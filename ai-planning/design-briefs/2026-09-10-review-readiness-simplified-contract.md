@@ -290,13 +290,34 @@ owner's recorded acceptance — not this document — makes it one.
 
 ### Decision 7 — Size budget, binding on the regenerated artifacts
 
-| Artifact | Budget |
-|---|---|
-| `docs/review/adversarial-review.md` (the delivered guide) | ≤ 180 lines |
-| `design.md` | ≤ 200 lines |
-| `proposal.md` | ≤ 100 lines |
-| `tasks.md` | ≤ 100 lines |
-| Change directory total | ≤ 420 lines |
+| Artifact | Budget | Revised 2026-09-10 |
+|---|---|---|
+| `docs/review/adversarial-review.md` (the delivered guide) | ≤ 180 lines | unchanged |
+| `design.md` | ≤ 200 lines | ≤ 240 |
+| `proposal.md` | ≤ 100 lines | ≤ 115 |
+| `tasks.md` | ≤ 100 lines | ≤ 155 |
+| Change directory total | ≤ 420 lines | derived, not set |
+
+The per-file limits are the only authority. The directory total is their sum
+plus `tracking.yaml` and `.openspec.yaml`, and is not stated as an independent
+number — the original table stated both, and the two disagreed the moment the
+per-file figures moved. A set written in two places that can drift is the defect
+this change exists to remove, so the budget stops doing it.
+
+**Budget revision, accepted by the owner on 2026-09-10.** The original figures
+were set by analogy to `add-docs-issue-template` (396 lines), the closest peer.
+Two costs that peer does not carry turned out to be real: `proposal.md` must
+explain why a first attempt was retired, and `tasks.md` must encode the
+disposition record's carried obligations as checkable evidence. An adversarial
+review then raised three defects whose fixes add to `tasks.md` and `design.md`
+rather than removing anything.
+
+The guide is a delivered path, not part of the change directory, so its 180
+lines never counted toward the directory total. The revision is a correction to
+a figure chosen by analogy, not permission to grow; the six-topic scope, the
+removal table, and the re-entry guards are unchanged and remain the real
+constraint. At ≤ 500 the change is roughly a quarter the size of the retired
+attempt's 2,185 lines.
 
 No `specs/` tree. `.openspec.yaml` declares `skip_specs: true`, which the
 Planning Artifact Quality Contract requires as an explicit boolean rather than
