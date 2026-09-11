@@ -295,7 +295,7 @@ owner's recorded acceptance — not this document — makes it one.
 | `docs/review/adversarial-review.md` (the delivered guide) | ≤ 180 lines | unchanged |
 | `design.md` | ≤ 200 lines | ≤ 240 |
 | `proposal.md` | ≤ 100 lines | ≤ 115 |
-| `tasks.md` | ≤ 100 lines | ≤ 155 |
+| `tasks.md` | ≤ 100 lines | ≤ 165 |
 | Change directory total | ≤ 420 lines | derived, not set |
 
 The per-file limits are the only authority. The directory total is their sum
@@ -303,6 +303,14 @@ plus `tracking.yaml` and `.openspec.yaml`, and is not stated as an independent
 number — the original table stated both, and the two disagreed the moment the
 per-file figures moved. A set written in two places that can drift is the defect
 this change exists to remove, so the budget stops doing it.
+
+`tasks.md` was revised a second time, from 155 to 165, on 2026-09-10 after the
+two adversarial reviews. Their fixes added evidence to tasks 0.1, 2.2, and 5.1;
+four trimming passes recovered only a few lines before further cuts would have
+removed checkable evidence rather than words. Recorded explicitly because a
+limit quietly moved each time it is missed is not a limit, and this is the last
+revision that should happen without re-examining the scope instead of the
+number.
 
 **Budget revision, accepted by the owner on 2026-09-10.** The original figures
 were set by analogy to `add-docs-issue-template` (396 lines), the closest peer.
