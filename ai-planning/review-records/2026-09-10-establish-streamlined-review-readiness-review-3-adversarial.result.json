@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "skill": "base-code-review",
+  "status": "completed",
+  "mode": "interactive",
+  "summary": "Adversarial planning review found one exhausted-repair blocker, one high input-binding defect, and one medium evidence-lifecycle defect in establish-streamlined-review-readiness.",
+  "artifacts": [
+    {
+      "kind": "file",
+      "operation": "created",
+      "subject": "ai-planning/scratch/2026-09-10-establish-streamlined-review-readiness-adversarial-review-pass-3.md"
+    },
+    {
+      "kind": "record",
+      "operation": "created",
+      "subject": "ai-planning/scratch/2026-09-10-establish-streamlined-review-readiness-adversarial-review-pass-3.result.json"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "type": "review",
+      "subject": "Task 0.1 commits the planning directory before task 5.1 uses git status as whole-change scope evidence.",
+      "result": "informational",
+      "reference": "openspec/changes/establish-streamlined-review-readiness/tasks.md:20-39,120-136"
+    },
+    {
+      "id": "E2",
+      "type": "record",
+      "subject": "The design and disposition record call the clean-worktree git-status observation the resolved replacement for an exhausted earlier repair.",
+      "result": "informational",
+      "reference": "openspec/changes/establish-streamlined-review-readiness/design.md:92-103; ai-planning/review-records/2026-09-10-review-readiness-finding-dispositions.md:124-126,137-139"
+    },
+    {
+      "id": "E3",
+      "type": "review",
+      "subject": "The required review record is outside tracking.yaml and is created after the final scope check, while delivery evidence covers only tracking inventory paths.",
+      "result": "informational",
+      "reference": "openspec/changes/establish-streamlined-review-readiness/design.md:80-96,121; openspec/changes/establish-streamlined-review-readiness/tasks.md:120-159"
+    },
+    {
+      "id": "E4",
+      "type": "review",
+      "subject": "The preservation-source entry gate names a mutable branch and an unspecified preservation head, while proposal and design require multiple linked records that are absent from main.",
+      "result": "informational",
+      "reference": "openspec/changes/establish-streamlined-review-readiness/proposal.md:10-23; openspec/changes/establish-streamlined-review-readiness/design.md:13-17; openspec/changes/establish-streamlined-review-readiness/tasks.md:6-11"
+    },
+    {
+      "id": "E5",
+      "type": "validation",
+      "subject": "Selected tracking, artifact-quality, and strict OpenSpec validation passed for the planning artifacts.",
+      "result": "passed",
+      "reference": "node scripts/validation/validate-tracking.mjs; node scripts/validation/validate-openspec-artifacts.mjs; openspec validate establish-streamlined-review-readiness --strict"
+    },
+    {
+      "id": "E6",
+      "type": "command",
+      "subject": "Live GitHub issue state could not be re-read because gh authentication was unavailable.",
+      "result": "failed",
+      "reference": "gh issue view 33 --json number,title,state,url,body"
+    }
+  ],
+  "assumptions": [
+    "The untracked change directory is the user-selected review target and no implementation task has run.",
+    "This is an advisory same-session local review, not OpenSpec Verify, CI, independent review, or approval."
+  ],
+  "openQuestions": [
+    {
+      "id": "Q1",
+      "question": "Which immutable preservation commit range or delivered pull request is the authoritative source prerequisite for Apply?",
+      "blocking": true
+    }
+  ],
+  "nextAction": {
+    "kind": "user-decision",
+    "description": "Hold a design review to choose a branch-range scope observation, bind the preservation source, and decide whether the exercise review record must be delivered or separately retained."
+  },
+  "details": {
+    "assurance": "local-review",
+    "worker": {
+      "executionIdentity": "codex same-session advisory reviewer",
+      "sameSession": true,
+      "readOnly": true,
+      "canMutate": false,
+      "canApprove": false
+    },
+    "reviewedScope": {
+      "targets": [
+        "openspec/changes/establish-streamlined-review-readiness/.openspec.yaml",
+        "openspec/changes/establish-streamlined-review-readiness/proposal.md",
+        "openspec/changes/establish-streamlined-review-readiness/design.md",
+        "openspec/changes/establish-streamlined-review-readiness/tasks.md",
+        "openspec/changes/establish-streamlined-review-readiness/tracking.yaml"
+      ],
+      "contextPaths": [
+        "AGENTS.md",
+        "docs/sdd-workflow.md",
+        "openspec/config.yaml",
+        "ai-planning/design-briefs/2026-09-10-review-readiness-simplified-contract.md",
+        "ai-planning/review-records/2026-09-10-review-readiness-finding-dispositions.md"
+      ],
+      "evidenceIds": ["E1", "E2", "E3", "E4", "E5", "E6"]
+    },
+    "findings": [
+      {
+        "id": "ARR-001",
+        "severity": "blocker",
+        "disposition": "human-decision",
+        "subject": "openspec/changes/establish-streamlined-review-readiness/tasks.md",
+        "evidenceIds": ["E1", "E2"],
+        "impact": "The specified scope check cannot prove its claim: git status excludes the planning artifacts task 0.1 already committed and any earlier committed implementation slice. An unrelated committed path can therefore evade task 5.1. The plan says this observer has already exhausted its correction budget, so another local patch would violate its own stop rule.",
+        "recommendation": "Return the observation model to design review. Bind task 5.1 to the registered starting commit and compare the complete branch range plus the current worktree state against the two declared categories, then make task 0.1 and delivery evidence use that same model."
+      },
+      {
+        "id": "ARR-002",
+        "severity": "high",
+        "disposition": "human-decision",
+        "subject": "openspec/changes/establish-streamlined-review-readiness/tasks.md",
+        "evidenceIds": ["E4"],
+        "impact": "Apply cannot reproduce or verify its required source set deterministically. The gate asks the operator to substitute an unspecified preservation head from a mutable branch, yet the proposal depends on several linked preserved records that are not on main. A partial merge can satisfy an improvised ancestry check while leaving a cited authority unavailable in the delivery worktree.",
+        "recommendation": "Record one immutable source boundary before Apply: an exact commit range or a merged preservation pull request and commit. Make the gate verify that boundary and every cited preserved path from the registered delivery base."
+      },
+      {
+        "id": "ARR-003",
+        "severity": "medium",
+        "disposition": "human-decision",
+        "subject": "openspec/changes/establish-streamlined-review-readiness/tasks.md",
+        "evidenceIds": ["E3"],
+        "impact": "Task 5.2 creates mandatory review evidence after the only whole-change scope check. Because tracking.yaml and task 6.1 exclude that path, a pull request can deliver the guidance while omitting the required exercise record, or retain it only in a disposable worktree.",
+        "recommendation": "Choose the record's intended lifecycle. If it is delivery evidence, give it an exact committed path and verify it in the final branch-range check; if it is local-only evidence, define its durable owner, retention location, and a check that proves it exists before delivery."
+      }
+    ],
+    "coverage": [
+      {
+        "area": "Planning artifact shape and documentation-only classification",
+        "status": "reviewed",
+        "evidenceIds": ["E5"]
+      },
+      {
+        "area": "Task ordering, recovery, source binding, and evidence producibility",
+        "status": "reviewed",
+        "evidenceIds": ["E1", "E2", "E3", "E4"]
+      },
+      {
+        "area": "Live issue and Project consistency",
+        "status": "gap",
+        "evidenceIds": ["E6"]
+      },
+      {
+        "area": "Runtime behavior, dependencies, secrets, and accessibility",
+        "status": "not-applicable",
+        "evidenceIds": ["E5"]
+      }
+    ],
+    "standardsSelection": {
+      "selectedRuleIds": [],
+      "scopedOverrides": [],
+      "notApplicableRuleIds": []
+    },
+    "evidenceGaps": [
+      {
+        "id": "GAP-001",
+        "subject": "GitHub issue #33 and Project item",
+        "reason": "gh returned HTTP 401, so live issue scope and Project state were not used as review evidence."
+      }
+    ],
+    "scopeSummary": "Read-only adversarial review of the latest active change's five planning artifacts and their local governing sources; no implementation or delivery state was reviewed."
+  }
+}
