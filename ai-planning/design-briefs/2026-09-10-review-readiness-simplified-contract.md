@@ -41,11 +41,15 @@ visible in one comparison:
 | Change directory | 2,185 lines | 213–396 lines |
 | Delta spec | 12 requirements / 68 scenarios | 1–3 requirements / 4–6 scenarios |
 
-It governs a guidance surface totalling 743 lines: `AGENTS.md` (36),
-`CLAUDE.md` (36), `docs/sdd-workflow.md` (576), `openspec/config.yaml` (95). An
-831-line normative specification to add review discipline to a 743-line guidance
-set breaches this repository's **Proportion** ground rule by roughly an order of
-magnitude, and it breaches the `openspec/config.yaml` statement of the same rule.
+It governs a guidance surface totalling 707 lines: `AGENTS.md` (36),
+`docs/sdd-workflow.md` (576), `openspec/config.yaml` (95). An 831-line normative
+specification to add review discipline to a 707-line guidance set breaches this
+repository's **Proportion** ground rule by roughly an order of magnitude, and it
+breaches the `openspec/config.yaml` statement of the same rule.
+
+An earlier draft of this brief put the figure at 743 by counting `CLAUDE.md`
+separately. It is a symbolic link to `AGENTS.md`, so that added the same file
+twice. The argument is unaffected; the number was wrong.
 
 The mechanism that turned excess size into findings is specific and worth
 stating precisely, because the remedy follows from it. The contract required
@@ -182,7 +186,7 @@ surface; others link to it by stable title and do not quote it.
 | `docs/review/adversarial-review.md` | Defect classes, finding format, materiality rule, closure procedure, both stops, reviewer kinds and isolation, review-record start-header template |
 | The agent-skills repository, later | Enforceable review behaviour — see §3. Not this change. |
 | `docs/sdd-workflow.md` | Where the method enters the existing gates and lifecycle |
-| `AGENTS.md` / `CLAUDE.md` | One identical short routing block |
+| `AGENTS.md` | One short routing block; `CLAUDE.md` is a symbolic link to it |
 | `openspec/config.yaml` | Short authoring and Apply obligations appended to existing lists |
 | `design.md` | Change-specific decisions and the consumer map |
 | `tasks.md` | Ordered work and each task's evidence |
@@ -217,30 +221,37 @@ Inputs are frozen before the pass; outputs are written outside the frozen set;
 the record never participates in its own binding. This is the reconciliation
 brief's D4 with one fewer artifact.
 
-### Decision 3 — Resolve the boundary observer by clean worktree, not by protocol
+### Decision 3 — Observe scope at the pull request
 
-Retire the claim in its failed form. Replace it with a structural property:
+**Superseded on 2026-09-10 and replaced in place.** This decision originally
+said Apply would run in a registered clean worktree, where
+`git status --porcelain=v1 --untracked-files=all` would enumerate the change's
+edits in one command. Adversarial review `ARR-001` demonstrated that this fails:
+`git status` cannot see committed work, and task 0.1 commits the planning
+directory, so the observer goes blind exactly when the change is real. That was
+the third failure of one claim, and the second-repair stop required a design
+review before it could be touched again.
 
-- **At Apply**, work runs in the registered clean worktree the existing
-  resource-registration procedure already requires. In a clean worktree,
-  `git status --porcelain=v1 --untracked-files=all` enumerates exactly this
-  change's edits, and comparison against the planned path set is one command
-  whose output is the evidence.
-- **At Propose**, in the dirty primary worktree, the change makes no workspace-
-  integrity claim at all. It claims only what is producible: these are the
-  planning files I edited, here are their digests.
+The replacement, and the reason the previous diagnosis was wrong, are recorded
+in
+[the scope-observation design review](../review-records/2026-09-10-review-readiness-scope-observation-design-review.md),
+which this decision now defers to rather than restating. In short:
 
-This is the reconciliation brief's D3 problem solved by removing the obligation
-rather than by writing a longer procedure for it. D3's five-command protocol
-with content fingerprints and symlink/submodule/ignored classification is
-declined: it is a third statement of the claim that failed twice, in a form
-harder to execute and still unverifiable by anything but another reading.
+- **At Apply**, the pull request's changed-file list is the authoritative scope
+  observer. A forge computes it against the merge base, so commit granularity —
+  the variable that defeated three local observers — cannot affect it.
+- **At Propose**, in the dirty primary worktree, the change makes no
+  workspace-integrity claim at all. Unchanged from the original decision.
 
-No script is added by this change, because under this decision the comparison is
-already one command. If the clean-worktree route is exercised on this change and
-the next and the comparison is still painful, a small checker is then justified
-under manual-first and gets its own change. The reconciliation brief's D9 ban on
-tooling is not adopted as a permanent rule.
+The reconciliation brief's five-command protocol with content fingerprints and
+symlink classification remains declined, for the original reason: it is another
+statement of a claim that kept failing, in a form harder to execute.
+
+No script is added by this change. If the pull-request observer proves
+insufficient, the recorded response is to remove the claim rather than build a
+fifth observer; a checker would then be a separately scoped change. The
+reconciliation brief's D9 ban on tooling is still not adopted as a permanent
+rule.
 
 ### Decision 4 — Findings by identity; two provenance values, not five
 
@@ -420,7 +431,7 @@ normatively in the second-repair rule and nothing defines it.
 | Surface | Change |
 |---|---|
 | `docs/review/adversarial-review.md` | New, ~150 lines. The standing method. Sole owner of the classes, finding format, materiality rule, closure procedure, stops, isolation rules, and start-header template. |
-| `AGENTS.md`, `CLAUDE.md` | One identical routing block, ~10 lines. Points to the method; restates no policy set. |
+| `AGENTS.md` | One routing block, ~10 lines. Points to the guide; restates no policy set. `CLAUDE.md` is a symbolic link to this file and needs no separate edit. |
 | `docs/sdd-workflow.md` | One `## Review Readiness and Correction Discipline` section between `## Planning Artifact Quality Contract` and `## Register Local Delivery Resources Before Creation`, plus gate-row links in `## Human Review Gates` and `## Definition of Done for Selected Actions`. |
 | `openspec/config.yaml` | Rule strings appended to existing `rules.*` and `operations.apply.guidance` lists. No new key. |
 | `docs/design/glossary/` | Five terms per Decision 9; `Related:` extensions only on existing entries. |
@@ -456,7 +467,7 @@ budget, not an exhortation.
 | Retiring the fan-out register lets drift return | Decision 1 removes most of the duplication the register existed to police. The one surviving equality is a byte comparison of two blocks. |
 | Dropping the packet index leaves reviews under-bound | The start header carries the same bindings and is written by the reviewer, who has the strongest incentive to bind correctly and cannot claim a clean pass without it. |
 | Two provenance values lose diagnostic signal | The one distinction that drove a correct diagnosis is kept. The rest is recorded as prose where it matters. |
-| The clean-worktree route proves insufficient at Apply | Decision 3's checker becomes justified under manual-first and gets its own change; the obligation is not silently dropped. |
+| The pull-request scope observer proves insufficient | Remove the claim, as the scope-observation design review records — not a fifth observer. A checker would then be a separately scoped change; the obligation is not silently dropped. |
 | Owner declines the back-out | Option B is the fallback: the reconciliation brief's D1–D9 migration, at higher cost. |
 | The disposition record becomes a rubber stamp | Each ID needs a named decision or a surviving obligation; `obsolete-by-removal` requires the surface to actually be absent from the regenerated artifacts. |
 
@@ -493,16 +504,24 @@ in §3.
    [`ai-planning/review-records/2026-09-10-retired-review-readiness-artifacts/`](../review-records/2026-09-10-retired-review-readiness-artifacts/README.md),
    verified byte-identical, with `review-packet.md` matching the digest recorded
    at pass 3.
-3. Remove `openspec/changes/establish-streamlined-review-readiness/`.
-4. Write the finding-disposition record covering every open pass-1, pass-2, and
-   pass-3 identity.
-5. Realign issue #33 under explicit authorization.
-6. Rebuild the planning artifacts against Decision 7's budget, documentation-only.
-7. One review pass against the new binding, then the Planning-to-Apply gate.
-
+3. ~~Remove the old change directory.~~ **Done.**
+4. ~~Write the finding-disposition record.~~ **Done** — all 52 identities in
+   [the disposition record](../review-records/2026-09-10-review-readiness-finding-dispositions.md).
+5. ~~Realign issue #33.~~ **Done** on 2026-09-10, with its prior body preserved.
+6. ~~Rebuild the planning artifacts.~~ **Done**, documentation-only.
+7. Review against the new binding, then the Planning-to-Apply gate. **Three
+   reviews have run** — two on 2026-09-10 and a third that fired the
+   second-repair stop on the scope observer. Their findings are applied and
+   their records are in `ai-planning/review-records/`. The next evaluation is
+   the fourth and carries that history; the count does not restart.
 Stop after step 7. Writing the guide itself and editing `AGENTS.md`,
-`CLAUDE.md`, `docs/sdd-workflow.md`, `openspec/config.yaml`, and the glossary is
-Apply, and remains a separate explicit human gate.
+`docs/sdd-workflow.md`, `openspec/config.yaml`, and the glossary is Apply, and
+remains a separate explicit human gate.
+
+One prerequisite sits between that gate and Apply rather than in this sequence:
+the preservation pull request must be merged to the default branch. Task 0.1's
+entry gate depends on it, and the planning artifacts link preserved records by
+relative path.
 
 Deferred beyond this change, in the agent-skills repository once this
 repository's next runs supply evidence: a planning-artifact review counterpart

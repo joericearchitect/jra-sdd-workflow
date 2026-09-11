@@ -28,7 +28,7 @@ sixteen from pass 3. Thirty were open when the artifacts were retired.
 
 | Precondition | Status |
 | --- | --- |
-| The second-repair stop on `p3-boundary-observer` required design review before a third repair | Satisfied. The design review is the simplified-contract brief; its Decision 3 is the outcome. No third repair was attempted. |
+| The second-repair stop on `p3-boundary-observer` required design review before a third repair | Satisfied, then satisfied again. The first design review was the simplified-contract brief's Decision 3. Its replacement observer failed as `ARR-001`, and [a second design review](2026-09-10-review-readiness-scope-observation-design-review.md) supersedes it. No repair of this claim was made outside either review. |
 | The third-pass stop required a complete sweep before diagnosis | Satisfied at pass 3, which declared all eight classes with issue #33 read live. |
 | Requirement 9 precedence 1 required design reconciliation before further edits | Satisfied. No artifact was edited between pass 3 and the retirement. |
 | An owner decision is required to start a new review series | Recorded 2026-09-10 in the brief's status block. Prior findings carry forward through this record; the count does not reset by relabelling. |
@@ -123,7 +123,7 @@ dispositions missing. Each is now given one.
 | `rr-index-locates-members` | `obsolete-by-removal` | Decision 2. |
 | `rr-index-unbound` | `resolved-by-design` | Decision 2. The review record's start header is written before analysis and binds the inputs; nothing binds itself. |
 | `rr-context-delivery-claim` | `carried-open` | The replacement `design.md` Context must not describe uncommitted work as delivered. Partly relieved by committing the records and the glossary patch, but the discipline still applies to whatever remains uncommitted. |
-| `rr-status-vacuous` | `resolved-by-design` | Decision 3. Apply runs in a clean registered worktree where `git status --porcelain=v1 --untracked-files=all` observes exactly this change's edits; Propose makes no workspace-integrity claim. This is the identity whose second failure fired the stop. |
+| `rr-status-vacuous` | `resolved-by-design` | **Basis revised 2026-09-10.** Originally closed on Decision 3's clean-worktree observer; that observer then failed as `ARR-001`, because `git status` cannot see committed work. Now closed on the [scope-observation design review](2026-09-10-review-readiness-scope-observation-design-review.md): the pull request's changed-file list is the observer, and Propose makes no workspace-integrity claim. This is the identity whose second failure fired the stop and whose third failure forced that review. |
 | `rr-testimony-claims` | `carried-open` | The witness testimony remains cited evidence. Any claim about what it says must match it. |
 | `rr-no-transition` | `carried-open` | The guide must state that a change predating it adopts it at its owner's first review afterwards. Already reflected in the rescoped issue's out-of-scope list. |
 | `rr-testimony-latent-estimate` | `carried-open` | With `rr-testimony-claims`. Estimates stay estimates and keep their stated basis. |
@@ -136,7 +136,7 @@ dispositions missing. Each is now given one.
 | ID | Outcome | Basis |
 | --- | --- | --- |
 | `p3-glossary-stranded` | `verified-closed` | With `IF-4`. The text is committed and no longer depends on one worktree surviving. |
-| `p3-boundary-observer` | `resolved-by-design` | Decision 3. The stop it fired demanded design review before a third repair; that review happened and chose to retire the claim rather than restate it. No third repair was made. |
+| `p3-boundary-observer` | `resolved-by-design` | **Basis revised 2026-09-10**, with `rr-status-vacuous`. Decision 3's replacement observer failed as `ARR-001`; the [scope-observation design review](2026-09-10-review-readiness-scope-observation-design-review.md) is the current basis. The stop it fired demanded design review before a third repair, and both design reviews happened before any repair of this claim. |
 | `p3-prior-findings-stale` | `verified-closed` | This record. Every identity from every pass now has an outcome, and this record is the single current-status reference. |
 | `p3-correction-record-unbound` | `verified-closed` | All four review records, the handoff, the testimony, and both briefs are committed at `e9eaf79`. They are bound by Git object identity; the chain no longer ends in a moving object. |
 | `p3-manifest-unproducible` | `resolved-by-design` | Decisions 2 and 4. There is no member-3 manifest. The start header lists the inputs that actually exist at the phase the review runs. |
@@ -195,6 +195,12 @@ hold only while the structure stays absent. If the replacement artifacts
 reintroduce any of these, the findings listed beside it reopen at their
 original severity.
 
+State each guard as the **class** of structure, not as the instances already
+seen. The last row was originally written as "a claim made from the dirty
+primary worktree," which described the two failures known at the time;
+`ARR-001` was the same defect in a clean worktree and the guard would not have
+caught it. A guard narrowed to its examples is not a guard.
+
 | Structure that must stay absent | Reopens |
 | --- | --- |
 | A per-change packet index file | `rr-ten-members`, `rr-index-stop-condition`, `rr-member-quote`, `rr-index-locates-members`, `rr-quote-equality-unchecked`, `p3-issue-authorization-survives`, `p3-dir-carveout`, `sr-generic-stop-condition` |
@@ -202,7 +208,7 @@ original severity.
 | A brief-versus-change supersession table | `rr-divergence-count`, `p3-brief-divergences-unlisted` |
 | Numbered requirement identifiers cited across surfaces | `rr-c10-requirement-ids`, `p3-c17-requirement-ids` |
 | Any decisive set restated on more than one surface | `IF-2`, `rr-c11-path-count`, `sr-generic-set-not-count`, `rr-glossary-set-stale` |
-| Any workspace-integrity claim made from the dirty primary worktree | `rr-status-vacuous`, `p3-boundary-observer` |
+| Any whole-change scope claim evidenced by a local command run at a moment the implementer chooses — in any worktree, clean or dirty | `rr-status-vacuous`, `p3-boundary-observer`, `ARR-001` |
 
 The last row is the one that fired the second-repair stop. A third statement of
 that claim in any form returns the change to design review rather than to a fix.
